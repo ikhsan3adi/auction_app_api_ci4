@@ -2,6 +2,8 @@
 
 namespace Config;
 
+use CodeIgniter\Router\RouteCollection;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -30,6 +32,13 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
+
+$routes->post('api/login', 'Api\AuthController::login', ['filter' => 'cors']);
+
+$routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $routes) {
+
+    $routes->resource('user', ['controller' => 'Api\User']);
+});
 
 /*
  * --------------------------------------------------------------------
