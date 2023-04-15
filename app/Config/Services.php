@@ -3,6 +3,7 @@
 namespace Config;
 
 use CodeIgniter\Config\BaseService;
+use App\Models\UserModel;
 
 /**
  * Services Configuration file.
@@ -29,4 +30,20 @@ class Services extends BaseService
      *     return new \CodeIgniter\Example();
      * }
      */
+
+    public static function verifyUser($user_id, $username, $email)
+    {
+        $user_db = new UserModel;
+        $user_exist = $user_db->getUserByIdUsernameEmail($user_id, $username, $email);
+
+        if (!$user_exist) return false;
+
+        session()->setFlashdata([
+            'user_id' => $user_id,
+            'username' => $username,
+            'email' => $email
+        ]);
+
+        return true;
+    }
 }

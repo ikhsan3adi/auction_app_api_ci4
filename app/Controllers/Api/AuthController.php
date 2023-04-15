@@ -36,7 +36,11 @@ class AuthController extends BaseController
         }
 
         $jwt = new JWTCI4;
-        $token = $jwt->token();
+        $token = $jwt->token(
+            user_id: $user['user_id'],
+            username: $user['username'],
+            email: $user['email']
+        );
 
         return $this->respond(['status' => 200, 'token' => $token]);
     }

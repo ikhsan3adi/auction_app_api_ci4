@@ -6,6 +6,7 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Libraries\JWTCI4;
+use Config\Services;
 
 class AuthFilter implements FilterInterface
 {
@@ -40,11 +41,25 @@ class AuthFilter implements FilterInterface
         $jwt = new JWTCI4;
         $verify = $jwt->parse($token);
 
+        $response = Response();
+
         if (!$verify['success']) {
-            $response = Response();
             $response->setJSON([
                 'status' => 401,
                 'messages' => ['error' => $verify['message']]
+            ]);
+            $response->setStatusCode(401);
+            return $response;
+        }
+
+        if (!Services::verifyUser(
+            $verify['token']->user_id,
+            $verify['token']->username,
+            $verify['token']->email
+        )) {
+            $response->setJSON([
+                'status' => 401,
+                'messages' => ['error' => 'Unauthorized user. Please re-login']
             ]);
             $response->setStatusCode(401);
             return $response;

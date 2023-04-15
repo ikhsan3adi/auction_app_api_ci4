@@ -46,9 +46,12 @@ class JWTCI4
       return $this;
    }
 
-   public function token()
+   public function token($user_id, $username, $email)
    {
       $payload = [
+         'user_id' => $user_id,
+         'username' => $username,
+         'email' => $email,
          'iss' => $this->iss,
          'iat' => $this->iat,
          'exp' => $this->exp,
@@ -67,7 +70,7 @@ class JWTCI4
       try {
          $decoded = JWT::decode($bearerToken, new Key($this->key, 'HS256'));
 
-         return ['success' => true];
+         return ['success' => true, 'token' => $decoded];
       } catch (\Exception $e) {
 
          return ['success' => false, 'message' => $e->getMessage()];

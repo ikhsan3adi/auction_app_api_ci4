@@ -47,4 +47,13 @@ class UserModel extends Model
         }
         return $this->findAll();
     }
+
+    public function getUserByIdUsernameEmail($id, $username, $email)
+    {
+        return $this->where([
+            $this->primaryKey => $id,
+            'username' => $username,
+            'email' => $email
+        ])->first();
+    }
 }
