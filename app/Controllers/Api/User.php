@@ -129,11 +129,11 @@ class User extends ResourceController
     public function delete($id = null)
     {
         $db = new UserModel;
-        $exist = $db->where('id', $id)->first();
+        $exist = $db->getUser($id);
 
         if (!$exist) return $this->failNotFound(description: 'User not found');
 
-        $delete = $db->delete();
+        $delete = $db->delete($id);
 
         if (!$delete) return $this->failServerError(description: 'Failed to delete user');
 
