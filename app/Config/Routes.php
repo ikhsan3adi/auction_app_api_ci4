@@ -41,9 +41,12 @@ $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $r
 
     $routes->resource('item', ['controller' => 'Api\Item']);
 
+    $routes->get('auction/(:segment)/bids', 'Api\Bid::showBids/$1');
     $routes->patch('auction/(:segment)/winner', 'Api\Auction::setWinner/$1');
     $routes->patch('auction/(:segment)/close', 'Api\Auction::close/$1');
     $routes->resource('auction', ['controller' => 'Api\Auction']);
+
+    $routes->resource('bid', ['controller' => 'Api\Bid']);
 });
 
 /*
