@@ -6,6 +6,7 @@ use App\Models\AuctionModel;
 use App\Models\ItemModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
+use Config\Services;
 
 class Auction extends ResourceController
 {
@@ -30,7 +31,7 @@ class Auction extends ResourceController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $auctions,
+            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
         ]);
     }
 
@@ -46,7 +47,7 @@ class Auction extends ResourceController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $auction,
+            'data' => Services::arrayKeyToCamelCase($auction, nested: false),
         ]);
     }
 

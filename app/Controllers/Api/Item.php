@@ -5,6 +5,7 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseController;
 use App\Models\ItemModel;
 use CodeIgniter\API\ResponseTrait;
+use Config\Services;
 
 class Item extends BaseController
 {
@@ -29,7 +30,7 @@ class Item extends BaseController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $items,
+            'data' => Services::arrayKeyToCamelCase($items, nested: true),
         ]);
     }
 
@@ -45,7 +46,7 @@ class Item extends BaseController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $item,
+            'data' => Services::arrayKeyToCamelCase($item, nested: false),
         ]);
     }
 

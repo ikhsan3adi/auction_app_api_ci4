@@ -6,6 +6,7 @@ use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\RESTful\ResourceController;
 
 use App\Models\UserModel;
+use Config\Services;
 
 class User extends ResourceController
 {
@@ -30,7 +31,7 @@ class User extends ResourceController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $users,
+            'data' => Services::arrayKeyToCamelCase($users, nested: true),
         ]);
     }
 
@@ -46,7 +47,7 @@ class User extends ResourceController
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => $user,
+            'data' => Services::arrayKeyToCamelCase($user, nested: false),
         ]);
     }
 

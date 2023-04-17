@@ -46,4 +46,39 @@ class Services extends BaseService
 
         return true;
     }
+
+    public static function arrayKeyToCamelCase($array, $nested = false)
+    {
+        $newArray = [];
+
+        if ($nested) {
+            foreach ($array as $key1 => $value1) {
+                foreach ($value1 as $key2 => $value2) {
+                    $newKey = preg_replace_callback(
+                        '/_([^_])/',
+                        function (array $m) {
+                            return ucfirst($m[1]);
+                        },
+                        $key2
+                    );
+
+                    $newArray[$key1][$newKey] = $value2;
+                }
+            }
+        } else {
+            foreach ($array as $key => $value) {
+                $newKey = preg_replace_callback(
+                    '/_([^_])/',
+                    function (array $m) {
+                        return ucfirst($m[1]);
+                    },
+                    $key
+                );
+
+                $newArray[$newKey] = $value;
+            }
+        }
+
+        return $newArray;
+    }
 }
