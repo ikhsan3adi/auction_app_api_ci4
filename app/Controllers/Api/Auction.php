@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Models\AuctionModel;
+use App\Models\BidModel;
 use App\Models\ItemModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
@@ -142,13 +143,20 @@ class Auction extends ResourceController
     public function setWinner($id)
     {
         if (!$this->validate([
-            // 'auction_id'       => 'permit_empty|numeric',
-            'winner_user_id'   => 'required|numeric',
+            'bid_id'   => 'required|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
 
-        $winnerUserId = $this->request->getRawInputVar('winner_user_id');
+        $bidId = $this->request->getRawInputVar('bid_id');
+
+        $bidDb = new BidModel;
+
+        $bid = $bidDb->where(['bid_id' => $bidId])->first();
+
+        if (!$bid) {
+            return $this->failNotFound('Bid not found');
+        }
 
         $db = new AuctionModel;
 
@@ -162,8 +170,8 @@ class Auction extends ResourceController
         }
 
         $update = [
-            'winner_user_id' => $winnerUserId,
-            'final_price'
+            'winner_user_id' => $bid['user_id'],
+            'final_price'    => $bid['bid_price']
         ];
 
         $save = $db->update($id, $update);
