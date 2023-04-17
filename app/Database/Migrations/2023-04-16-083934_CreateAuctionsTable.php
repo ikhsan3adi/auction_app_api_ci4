@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class CreateAuctionsTable extends Migration
+{
+    public function up()
+    {
+        $this->forge->addField([
+            'auction_id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'auto_increment' => true
+            ],
+            'item_id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'null'           => true,
+            ],
+            'user_id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'null'           => true,
+            ],
+            'final_price' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+            ],
+            'winner_user_id' => [
+                'type'           => 'INT',
+                'constraint'     => 11,
+                'unsigned'       => true,
+                'null'           => true,
+            ],
+            'status' => [
+                'type'           => 'ENUM',
+                'constraint'     => ['open', 'closed'],
+                'default'        => 'open',
+            ],
+            'created_at' => [
+                'type'           => 'DATETIME',
+                'default'        => 'CURRENT_TIMESTAMP',
+                'null'           => true,
+            ],
+            'updated_at' => [
+                'type'           => 'DATETIME',
+                'default'        => 'CURRENT_TIMESTAMP',
+                'null'           => true,
+            ],
+            'deleted_at' => [
+                'type'           => 'DATETIME',
+                'null'           => true,
+            ],
+        ]);
+
+        // primary key
+        $this->forge->addKey('auction_id', TRUE);
+
+        $this->forge->addKey('item_id', FALSE);
+
+        $this->forge->addKey('user_id', FALSE);
+
+        $this->forge->addKey('winner_user_id', FALSE);
+
+        $this->forge->createTable('auctions', TRUE);
+    }
+
+    public function down()
+    {
+        $this->forge->dropTable('auctions');
+    }
+}
