@@ -11,6 +11,13 @@ class User extends ResourceController
 {
     use ResponseTrait;
 
+    protected String $userId;
+
+    public function __construct()
+    {
+        $this->userId = session()->getFlashdata('user_id');
+    }
+
     public function index()
     {
         $db = new UserModel;
@@ -89,7 +96,7 @@ class User extends ResourceController
         }
 
         $db = new UserModel;
-        $exist = $db->getUser($id);
+        $exist = $db->where(['user_id' => $this->userId])->first();
 
         if (!$exist) {
             return $this->failNotFound(description: 'User not found');
@@ -129,7 +136,7 @@ class User extends ResourceController
     public function delete($id = null)
     {
         $db = new UserModel;
-        $exist = $db->getUser($id);
+        $exist = $db->where(['user_id' => $this->userId])->first();
 
         if (!$exist) return $this->failNotFound(description: 'User not found');
 
