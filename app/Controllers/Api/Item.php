@@ -10,17 +10,17 @@ class Item extends BaseController
 {
     use ResponseTrait;
 
-    protected String $user_id;
+    protected String $userId;
 
     public function __construct()
     {
-        $this->user_id = session()->getFlashdata('user_id');
+        $this->userId = session()->getFlashdata('user_id');
     }
 
     public function index()
     {
         $db = new ItemModel;
-        $items = $db->where(['user_id' => $this->user_id])->findAll();
+        $items = $db->where(['user_id' => $this->userId])->findAll();
 
         if (!$items) {
             return $this->failNotFound('Items not found');
@@ -36,7 +36,7 @@ class Item extends BaseController
     public function show($id = null)
     {
         $db = new ItemModel;
-        $item = $db->where(['item_id' => $id, 'user_id' => $this->user_id])->first();
+        $item = $db->where(['item_id' => $id, 'user_id' => $this->userId])->first();
 
         if (!$item) {
             return $this->failNotFound('Item not found');
@@ -52,7 +52,7 @@ class Item extends BaseController
     public function create()
     {
         if (!$this->validate([
-            'user_id'       => 'required|numeric',
+            // 'user_id'       => 'required|numeric',
             'item_name'     => 'required',
             'description'   => 'required',
             'initial_price' => 'required|numeric',
@@ -61,7 +61,8 @@ class Item extends BaseController
         }
 
         $insert = [
-            'user_id'       => $this->request->getVar('user_id'),
+            // 'user_id'       => $this->request->getVar('user_id'),
+            'user_id'       => $this->userId,
             'item_name'     => $this->request->getVar('item_name'),
             'description'   => $this->request->getVar('description'),
             'initial_price' => $this->request->getVar('initial_price'),
