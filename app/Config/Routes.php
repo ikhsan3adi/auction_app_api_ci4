@@ -40,6 +40,10 @@ $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $r
     $routes->resource('user', ['controller' => 'Api\User']);
 
     $routes->resource('item', ['controller' => 'Api\Item']);
+
+    $routes->patch('auction/(:segment)/winner', 'Api\Auction::setWinner/$1');
+    $routes->patch('auction/(:segment)/close', 'Api\Auction::close/$1');
+    $routes->resource('auction', ['controller' => 'Api\Auction']);
 });
 
 /*
