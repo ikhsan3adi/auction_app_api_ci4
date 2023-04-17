@@ -93,7 +93,7 @@ class Item extends BaseController
         }
 
         $db = new ItemModel;
-        $exist = $db->where(['item_id' => $id])->first();
+        $exist = $db->where(['item_id' => $id, 'user_id' => $this->userId])->first();
 
         if (!$exist) {
             return $this->failNotFound(description: 'Item not found');
@@ -127,7 +127,7 @@ class Item extends BaseController
     public function delete($id = null)
     {
         $db = new ItemModel;
-        $exist = $db->where(['item_id' => $id])->first();
+        $exist = $db->where(['item_id' => $id, 'user_id' => $this->userId])->first();
 
         if (!$exist) return $this->failNotFound(description: 'Item not found');
 
