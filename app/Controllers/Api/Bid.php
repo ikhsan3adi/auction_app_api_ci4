@@ -34,10 +34,10 @@ class Bid extends ResourceController
         ]);
     }
 
-    public function showBids($auction_id = null)
+    public function showBids($auctionId = null)
     {
         $db = new BidModel;
-        $bids = $db->where(['auction_id' => $auction_id])->findAll();
+        $bids = $db->where(['auction_id' => $auctionId])->findAll();
 
         return $this->respond([
             'status' => 200,
@@ -65,16 +65,16 @@ class Bid extends ResourceController
     public function create()
     {
         if (!$this->validate([
-            'auction_id'  => 'required|numeric',
-            'bid_price'   => 'required|numeric',
+            'auctionId'  => 'required|numeric',
+            'bidPrice'   => 'required|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
 
         $insert = [
             'user_id'       => $this->userId,
-            'auction_id'     => $this->request->getVar('auction_id'),
-            'bid_price'   => $this->request->getVar('bid_price'),
+            'auction_id'     => $this->request->getVar('auctionId'),
+            'bid_price'   => $this->request->getVar('bidPrice'),
         ];
 
         $db = new BidModel;
@@ -93,8 +93,8 @@ class Bid extends ResourceController
     public function update($id = null)
     {
         if (!$this->validate([
-            'auction_id'       => 'permit_empty|numeric',
-            'bid_price'       => 'permit_empty|numeric',
+            'auctionId'       => 'permit_empty|numeric',
+            'bidPrice'       => 'permit_empty|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -102,7 +102,7 @@ class Bid extends ResourceController
         $db = new BidModel;
         $exist = $db->where([
             'bid_id' => $id,
-            'auction_id' => $this->request->getRawInputVar('auction_id'),
+            'auction_id' => $this->request->getRawInputVar('auctionId'),
             'user_id' => $this->userId
         ])->first();
 
@@ -111,8 +111,8 @@ class Bid extends ResourceController
         }
 
         $update = [
-            'bid_price' => $this->request->getRawInputVar('bid_price')
-                ?? $exist['bid_price'],
+            'bid_price' => $this->request->getRawInputVar('bidPrice')
+                ?? $exist['bidPrice'],
         ];
 
         $save = $db->update($id, $update);

@@ -55,7 +55,7 @@ class Auction extends ResourceController
     public function create()
     {
         if (!$this->validate([
-            'item_id'       => 'required|numeric',
+            'itemId'       => 'required|numeric',
             // 'user_id'       => 'required|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
@@ -63,7 +63,7 @@ class Auction extends ResourceController
 
         $itemDb = new ItemModel;
         $itemExist = $itemDb->where([
-            'item_id' => $this->request->getVar('item_id'),
+            'item_id' => $this->request->getVar('itemId'),
             'user_id' => $this->userId
         ])->first();
 
@@ -72,7 +72,7 @@ class Auction extends ResourceController
         }
 
         $insert = [
-            'item_id'       => $this->request->getVar('item_id'),
+            'item_id'       => $this->request->getVar('itemId'),
             'user_id'       => $this->userId,
             'status'        => 'open',
         ];
@@ -179,12 +179,12 @@ class Auction extends ResourceController
     public function setWinner($id)
     {
         if (!$this->validate([
-            'bid_id'   => 'required|numeric',
+            'bidId'   => 'required|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
 
-        $bidId = $this->request->getRawInputVar('bid_id');
+        $bidId = $this->request->getRawInputVar('bidId');
 
         $bidDb = new BidModel;
 
