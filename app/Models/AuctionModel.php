@@ -46,17 +46,25 @@ class AuctionModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getAllAuctions($status = 'open')
+    public function getAllAuctions($status = 'open', $where = NULL)
     {
+        $whereArray = [
+            'status' => $status,
+            'users.deleted_at' => NULL,
+            'items.deleted_at' => NULL
+        ];
+
+        if ($where) {
+            foreach ($where as $key => $value) {
+                $whereArray[$key] = $value;
+            }
+        }
+
         return $this->setTable('items')
             ->select('auctions.auction_id, items.item_id, items.user_id, users.name, users.username, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at')
             ->join('auctions', 'auctions.item_id = items.item_id', 'inner')
             ->join('users', 'auctions.user_id = users.user_id', 'inner')
-            ->where([
-                'status' => $status,
-                'users.deleted_at' => NULL,
-                'items.deleted_at' => NULL
-            ])
+            ->where($whereArray)
             ->findAll();
     }
 

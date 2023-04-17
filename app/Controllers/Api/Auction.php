@@ -140,6 +140,42 @@ class Auction extends ResourceController
         ]);
     }
 
+    public function history()
+    {
+        $db = new AuctionModel;
+        $auctions = $db->getAllAuctions(
+            status: 'closed',
+            where: $this->request->getVar('userId')
+                ? ['items.user_id' => $this->request->getVar('userId')] : NULL
+        );
+
+        if (!$auctions) {
+            return $this->failNotFound('Auctions not found');
+        }
+
+        return $this->respond([
+            'status' => 200,
+            'messages' => ['success' => 'OK'],
+            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
+        ]);
+    }
+
+    public function showHistory($id = null)
+    {
+        $db = new AuctionModel;
+        $auction = $db->getAuction($id, status: 'closed');
+
+        if (!$auction) {
+            return $this->failNotFound('Auction not found');
+        }
+
+        return $this->respond([
+            'status' => 200,
+            'messages' => ['success' => 'OK'],
+            'data' => Services::arrayKeyToCamelCase($auction, nested: false),
+        ]);
+    }
+
     public function setWinner($id)
     {
         if (!$this->validate([
