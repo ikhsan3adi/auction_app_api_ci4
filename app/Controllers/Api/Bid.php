@@ -21,7 +21,7 @@ class Bid extends ResourceController
     public function index()
     {
         $db = new BidModel;
-        $bids = $db->findAll();
+        $bids = $db->getBid();
 
         if (!$bids) {
             return $this->failNotFound('Bids not found');
@@ -43,7 +43,7 @@ class Bid extends ResourceController
     public function showBids($auctionId = null)
     {
         $db = new BidModel;
-        $bids = $db->where(['auction_id' => $auctionId])->findAll();
+        $bids = $db->getBid(where: ['auction_id' => $auctionId]);
 
         if ($bids) {
             foreach ($bids as $key => $value) {
@@ -63,7 +63,7 @@ class Bid extends ResourceController
     public function show($id = null)
     {
         $db = new BidModel;
-        $bid = $db->where(['bid_id' => $id])->first();
+        $bid = $db->getBid($id);
 
         if (!$bid) {
             return $this->failNotFound('Bid not found');

@@ -39,4 +39,35 @@ class BidModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getBid($id = NULL, $where = NULL)
+    {
+        $select = 'bids.bid_id, bids.user_id, bids.auction_id, bids.bid_price, users.name, users.username, users.email, users.phone, users.profile_image, bids.created_at';
+
+        $whereArray = [
+            'users.deleted_at' => NULL,
+            'bids.deleted_at' => NULL
+        ];
+
+        if ($where) {
+            foreach ($where as $key => $value) {
+                $whereArray[$key] = $value;
+            }
+        }
+
+        if ($id) {
+            $whereArray[$this->primaryKey] = $id;
+            return $this->setTable('users')
+                ->select($select)
+                ->join('bids', 'bids.user_id = users.user_id', 'inner')
+                ->where($whereArray)
+                ->first();
+        }
+
+        return $this->setTable('users')
+            ->select($select)
+            ->join('bids', 'bids.user_id = users.user_id', 'inner')
+            ->where($whereArray)
+            ->findAll();
+    }
 }
