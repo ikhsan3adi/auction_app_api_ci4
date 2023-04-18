@@ -46,8 +46,10 @@ class AuctionModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getAllAuctions($status = 'open', $where = NULL)
+    public function getAuction($id = NULL, $status = 'open', $where = NULL)
     {
+        $select = 'auctions.auction_id, items.item_id, items.user_id, users.name, users.username, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at';
+
         $whereArray = [
             'status' => $status,
             'users.deleted_at' => NULL,
@@ -60,33 +62,19 @@ class AuctionModel extends Model
             }
         }
 
+        if ($id) {
+            $whereArray[$this->primaryKey] = $id;
+            return $this->setTable('items')
+                ->select($select)
+                ->join('auctions', 'auctions.item_id = items.item_id', 'inner')
+                ->join('users', 'auctions.user_id = users.user_id', 'inner')
+                ->where($whereArray)->first();
+        }
         return $this->setTable('items')
-            ->select('auctions.auction_id, items.item_id, items.user_id, users.name, users.username, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at')
+            ->select($select)
             ->join('auctions', 'auctions.item_id = items.item_id', 'inner')
             ->join('users', 'auctions.user_id = users.user_id', 'inner')
             ->where($whereArray)
             ->findAll();
-    }
-
-    public function getAuction($id, $status = 'open', $where = NULL)
-    {
-        $whereArray = [
-            $this->primaryKey => $id,
-            'status' => $status,
-            'users.deleted_at' => NULL,
-            'items.deleted_at' => NULL
-        ];
-
-        if ($where) {
-            foreach ($where as $key => $value) {
-                $whereArray[$key] = $value;
-            }
-        }
-
-        return $this->setTable('items')
-            ->select('auctions.auction_id, items.item_id, items.user_id, users.name, users.username, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at')
-            ->join('auctions', 'auctions.item_id = items.item_id', 'inner')
-            ->join('users', 'auctions.user_id = users.user_id', 'inner')
-            ->where($whereArray)->first();
     }
 }

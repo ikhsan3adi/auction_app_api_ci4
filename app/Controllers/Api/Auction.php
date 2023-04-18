@@ -23,7 +23,7 @@ class Auction extends ResourceController
     public function index()
     {
         $db = new AuctionModel;
-        $auctions = $db->getAllAuctions();
+        $auctions = $db->getAuction();
 
         if (!$auctions) {
             return $this->failNotFound('Auctions not found');
@@ -147,7 +147,7 @@ class Auction extends ResourceController
     public function history()
     {
         $db = new AuctionModel;
-        $auctions = $db->getAllAuctions(
+        $auctions = $db->getAuction(
             status: 'closed',
             where: $this->request->getVar('userId')
                 ? ['items.user_id' => $this->request->getVar('userId')] : NULL
