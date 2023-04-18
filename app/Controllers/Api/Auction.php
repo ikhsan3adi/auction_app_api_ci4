@@ -99,7 +99,10 @@ class Auction extends ResourceController
         }
 
         $db = new AuctionModel;
-        $exist = $db->getAuction($id);
+        $exist = $db->getAuction(
+            $id,
+            where: ['items.user_id' => $this->userId]
+        );
 
         if (!$exist) {
             return $this->failNotFound(description: 'Auction not found');
@@ -109,6 +112,7 @@ class Auction extends ResourceController
             'status' => $this->request->getRawInputVar('status') ?? $exist['status'],
         ];
 
+        $db = new AuctionModel;
         $save = $db->update($id, $update);
 
         if (!$save) {
