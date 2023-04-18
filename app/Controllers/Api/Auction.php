@@ -4,6 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Models\AuctionModel;
 use App\Models\BidModel;
+use App\Models\ImageModel;
 use App\Models\ItemModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
@@ -29,6 +30,22 @@ class Auction extends ResourceController
             return $this->failNotFound('Auctions not found');
         }
 
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
+        foreach ($auctions as $key1 => $value1) {
+            $imageArray = [];
+            foreach ($images as $key2 => $value2) {
+                if ($value1['item_id'] == $value2['item_id']) {
+                    array_push($imageArray, [
+                        'imageId' => $value2['image_id'],
+                        'url' => Services::fullImageURL($value2['image'])
+                    ]);
+                }
+            }
+            $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
+        }
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -44,6 +61,20 @@ class Auction extends ResourceController
         if (!$auction) {
             return $this->failNotFound('Auction not found');
         }
+
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
+        $imageArray = [];
+        foreach ($images as $key2 => $value2) {
+            if ($auction['item_id'] == $value2['item_id']) {
+                array_push($imageArray, [
+                    'imageId' => $value2['image_id'],
+                    'url' => Services::fullImageURL($value2['image'])
+                ]);
+            }
+        }
+        $auction['images'] = $imageArray != [] ? $imageArray : null;
 
         return $this->respond([
             'status' => 200,

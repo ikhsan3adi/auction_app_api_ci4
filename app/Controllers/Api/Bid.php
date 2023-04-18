@@ -27,6 +27,12 @@ class Bid extends ResourceController
             return $this->failNotFound('Bids not found');
         }
 
+        foreach ($bids as $key => $value) {
+            if ($value['profile_image']) {
+                $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
+            }
+        }
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -38,6 +44,14 @@ class Bid extends ResourceController
     {
         $db = new BidModel;
         $bids = $db->where(['auction_id' => $auctionId])->findAll();
+
+        if ($bids) {
+            foreach ($bids as $key => $value) {
+                if ($value['profile_image']) {
+                    $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
+                }
+            }
+        }
 
         return $this->respond([
             'status' => 200,
@@ -53,6 +67,10 @@ class Bid extends ResourceController
 
         if (!$bid) {
             return $this->failNotFound('Bid not found');
+        }
+
+        if ($bid['profile_image']) {
+            $bid['profile_image'] = Services::fullImageURL($bid['profile_image']);
         }
 
         return $this->respond([

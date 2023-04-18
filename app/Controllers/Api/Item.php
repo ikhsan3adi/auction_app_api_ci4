@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
+use App\Models\ImageModel;
 use App\Models\ItemModel;
 use CodeIgniter\API\ResponseTrait;
 use Config\Services;
@@ -27,6 +28,22 @@ class Item extends BaseController
             return $this->failNotFound('Items not found');
         }
 
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
+        foreach ($items as $key1 => $value1) {
+            $imageArray = [];
+            foreach ($images as $key2 => $value2) {
+                if ($value1['item_id'] == $value2['item_id']) {
+                    array_push($imageArray, [
+                        'imageId' => $value2['image_id'],
+                        'url' => Services::fullImageURL($value2['image'])
+                    ]);
+                }
+            }
+            $items[$key1]['images'] = $imageArray != [] ? $imageArray : null;
+        }
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -42,6 +59,20 @@ class Item extends BaseController
         if (!$item) {
             return $this->failNotFound('Item not found');
         }
+
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
+        $imageArray = [];
+        foreach ($images as $key2 => $value2) {
+            if ($item['item_id'] == $value2['item_id']) {
+                array_push($imageArray, [
+                    'imageId' => $value2['image_id'],
+                    'url' => Services::fullImageURL($value2['image'])
+                ]);
+            }
+        }
+        $item['images'] = $imageArray != [] ? $imageArray : null;
 
         return $this->respond([
             'status' => 200,

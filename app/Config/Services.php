@@ -81,4 +81,9 @@ class Services extends BaseService
 
         return $newArray;
     }
+
+    public static function fullImageURL($imageName): string
+    {
+        return base_url('public/images/' . $imageName);
+    }
 }

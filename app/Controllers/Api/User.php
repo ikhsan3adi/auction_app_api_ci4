@@ -28,6 +28,12 @@ class User extends ResourceController
             return $this->failNotFound('Users not found');
         }
 
+        foreach ($users as $key => $value) {
+            if ($value['profile_image']) {
+                $users[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
+            }
+        }
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -42,6 +48,10 @@ class User extends ResourceController
 
         if (!$user) {
             return $this->failNotFound('User not found');
+        }
+
+        if ($user['profile_image']) {
+            $user['profile_image'] = Services::fullImageURL($user['profile_image']);
         }
 
         return $this->respond([

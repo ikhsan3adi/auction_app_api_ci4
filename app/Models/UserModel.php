@@ -14,7 +14,7 @@ class UserModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['username', 'password_hash', 'name', 'email', 'phone'];
+    protected $allowedFields    = ['username', 'password_hash', 'name', 'email', 'phone', 'profile_image'];
 
     // Dates
     protected $useTimestamps = true;
@@ -43,11 +43,11 @@ class UserModel extends Model
     public function getUser($id = NULL)
     {
         if ($id != NULL) {
-            return $this->select('user_id, username, name, email, phone, created_at')
+            return $this->select('user_id, username, name, email, phone, profile_image, created_at')
                 ->where($this->primaryKey, $id)
                 ->first();
         }
-        return $this->select('user_id, username, name, email, phone, created_at')->findAll();
+        return $this->select('user_id, username, name, email, phone, profile_image, created_at')->findAll();
     }
 
     public function getUserByIdUsernameEmail($id, $username, $email)
