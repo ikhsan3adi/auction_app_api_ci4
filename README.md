@@ -6,17 +6,20 @@
 ## Requirement
 
 - Composer
-- PHP/XAMPP 8.0+
-
+- PHP 8.0+, MySQL or XAMPP
 
 ## Configuration
 
 In your application, perform the following setup: 
 1.  Rename `env` file to `.env`.
 2.  Set the jwt secretkey and token expiration in the `.env` file if you want to change them.
-3.  Ensure your database is setup correctly, then run the migrations: 
+3.  Use composer to manage your dependencies and download PHP-JWT:
 ```shell
-    > php spark migrate -all  
+    composer require firebase/php-jwt
+```
+4.  Ensure your database is setup correctly, then run the migrations: 
+```shell
+    php spark migrate -all  
 ```
 
 
