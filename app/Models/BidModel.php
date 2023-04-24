@@ -42,7 +42,7 @@ class BidModel extends Model
 
     public function getBid($id = NULL, $where = NULL)
     {
-        $select = 'bids.bid_id, bids.user_id, bids.auction_id, bids.bid_price, users.name, users.username, users.email, users.phone, users.profile_image, bids.created_at';
+        $select = 'bids.bid_id, bids.auction_id, bids.bid_price, users.user_id, users.username, users.name, users.email, users.phone, users.profile_image, bids.created_at';
 
         $whereArray = [
             'users.deleted_at' => NULL,

@@ -34,6 +34,8 @@ class User extends ResourceController
             }
         }
 
+        $users = $this->tidyingResponseData($users, nested: TRUE);
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -53,6 +55,8 @@ class User extends ResourceController
         if ($user['profile_image']) {
             $user['profile_image'] = Services::fullImageURL($user['profile_image']);
         }
+
+        $user = $this->tidyingResponseData($user);
 
         return $this->respond([
             'status' => 200,
@@ -159,5 +163,31 @@ class User extends ResourceController
             'status' => 200,
             'messages' => ['success' => 'User successfully deleted']
         ]);
+    }
+
+    private function tidyingResponseData(array $data, $nested = FALSE): array
+    {
+        $newArray = [];
+
+        if ($nested) {
+            foreach ($data as $key => $value) {
+                $newArray[$key]['id'] = $value['user_id'];
+                $newArray[$key]['username'] = $value['username'];
+                $newArray[$key]['name'] = $value['name'];
+                $newArray[$key]['email'] = $value['email'];
+                $newArray[$key]['phone'] = $value['phone'];
+                $newArray[$key]['profileImageUrl'] = $value['profile_image'];
+            }
+            return $newArray;
+        }
+
+        $newArray['id'] = $data['user_id'];
+        $newArray['username'] = $data['username'];
+        $newArray['name'] = $data['name'];
+        $newArray['email'] = $data['email'];
+        $newArray['phone'] = $data['phone'];
+        $newArray['profileImageUrl'] = $data['profile_image'];
+
+        return $newArray;
     }
 }

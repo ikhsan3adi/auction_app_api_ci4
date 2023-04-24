@@ -36,13 +36,15 @@ class Item extends BaseController
             foreach ($images as $key2 => $value2) {
                 if ($value1['item_id'] == $value2['item_id']) {
                     array_push($imageArray, [
-                        'imageId' => $value2['image_id'],
+                        'id' => $value2['image_id'],
                         'url' => Services::fullImageURL($value2['image'])
                     ]);
                 }
             }
             $items[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
+
+        $items = $this->tidyingResponseData($items, nested: TRUE);
 
         return $this->respond([
             'status' => 200,
@@ -67,12 +69,14 @@ class Item extends BaseController
         foreach ($images as $key2 => $value2) {
             if ($item['item_id'] == $value2['item_id']) {
                 array_push($imageArray, [
-                    'imageId' => $value2['image_id'],
+                    'id' => $value2['image_id'],
                     'url' => Services::fullImageURL($value2['image'])
                 ]);
             }
         }
         $item['images'] = $imageArray != [] ? $imageArray : null;
+
+        $item = $this->tidyingResponseData($item);
 
         return $this->respond([
             'status' => 200,
@@ -171,5 +175,34 @@ class Item extends BaseController
             'status' => 200,
             'messages' => ['success' => 'Item successfully deleted']
         ]);
+    }
+
+
+    private function tidyingResponseData(array $data, $nested = FALSE): array
+    {
+        $newArray = [];
+
+        if ($nested) {
+            foreach ($data as $key => $value) {
+                $newArray[$key]['id'] = $value['item_id'];
+                $newArray[$key]['user_id'] = $value['user_id'];
+                $newArray[$key]['item_name'] = $value['item_name'];
+                $newArray[$key]['description'] = $value['description'];
+                $newArray[$key]['initial_price'] = $value['initial_price'];
+                $newArray[$key]['created_at'] = $value['created_at'];
+                $newArray[$key]['images'] = $value['images'];
+            }
+            return $newArray;
+        }
+
+        $newArray['id'] = $data['item_id'];
+        $newArray['user_id'] = $data['user_id'];
+        $newArray['item_name'] = $data['item_name'];
+        $newArray['description'] = $data['description'];
+        $newArray['initial_price'] = $data['initial_price'];
+        $newArray['created_at'] = $data['created_at'];
+        $newArray['images'] = $data['images'];
+
+        return $newArray;
     }
 }

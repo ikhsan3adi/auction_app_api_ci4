@@ -33,6 +33,8 @@ class Bid extends ResourceController
             }
         }
 
+        $bids = $this->tidyingResponseData($bids, nested: TRUE);
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -53,6 +55,8 @@ class Bid extends ResourceController
             }
         }
 
+        $bids = $this->tidyingResponseData($bids, nested: TRUE);
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -72,6 +76,8 @@ class Bid extends ResourceController
         if ($bid['profile_image']) {
             $bid['profile_image'] = Services::fullImageURL($bid['profile_image']);
         }
+
+        $bid = $this->tidyingResponseData($bid);
 
         return $this->respond([
             'status' => 200,
@@ -162,5 +168,43 @@ class Bid extends ResourceController
             'status' => 200,
             'messages' => ['success' => 'Bid successfully deleted']
         ]);
+    }
+
+    private function tidyingResponseData(array $data, $nested = FALSE): array
+    {
+        $newArray = [];
+
+        if ($nested) {
+            foreach ($data as $key => $value) {
+                $newArray[$key]['id'] = $value['bid_id'];
+                $newArray[$key]['auction_id'] = $value['auction_id'];
+                $newArray[$key]['bid_price'] = $value['bid_price'];
+                $newArray[$key]['bidder'] = [
+                    'id' => $value['user_id'],
+                    'username' => $value['username'],
+                    'name' => $value['name'],
+                    'email' => $value['email'],
+                    'phone' => $value['phone'],
+                    'profileImageUrl' => $value['profile_image'],
+                ];
+                $newArray[$key]['created_at'] = $value['created_at'];
+            }
+            return $newArray;
+        }
+
+        $newArray['id'] = $data['bid_id'];
+        $newArray['auction_id'] = $data['auction_id'];
+        $newArray['bid_price'] = $data['bid_price'];
+        $newArray['bidder'] = [
+            'id' => $data['user_id'],
+            'username' => $data['username'],
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'profileImageUrl' => $data['profile_image'],
+        ];
+        $newArray['created_at'] = $data['created_at'];
+
+        return $newArray;
     }
 }

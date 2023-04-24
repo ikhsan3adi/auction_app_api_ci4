@@ -38,13 +38,14 @@ class Auction extends ResourceController
             foreach ($images as $key2 => $value2) {
                 if ($value1['item_id'] == $value2['item_id']) {
                     array_push($imageArray, [
-                        'imageId' => $value2['image_id'],
                         'url' => Services::fullImageURL($value2['image'])
                     ]);
                 }
             }
             $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
+
+        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
 
         return $this->respond([
             'status' => 200,
@@ -69,12 +70,13 @@ class Auction extends ResourceController
         foreach ($images as $key2 => $value2) {
             if ($auction['item_id'] == $value2['item_id']) {
                 array_push($imageArray, [
-                    'imageId' => $value2['image_id'],
                     'url' => Services::fullImageURL($value2['image'])
                 ]);
             }
         }
         $auction['images'] = $imageArray != [] ? $imageArray : null;
+
+        $auction = $this->tidyingResponseData($auction);
 
         return $this->respond([
             'status' => 200,
@@ -203,6 +205,8 @@ class Auction extends ResourceController
             $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
+        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
+
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
@@ -231,6 +235,8 @@ class Auction extends ResourceController
             }
         }
         $auction['images'] = $imageArray != [] ? $imageArray : null;
+
+        $auction = $this->tidyingResponseData($auction);
 
         return $this->respond([
             'status' => 200,
@@ -316,5 +322,53 @@ class Auction extends ResourceController
                 'success' => 'Auction status successfully changed'
             ]
         ]);
+    }
+
+    private function tidyingResponseData(array $data, $nested = FALSE): array
+    {
+        $newArray = [];
+
+        if ($nested) {
+            foreach ($data as $key => $value) {
+                $newArray[$key]['id'] = $value['auction_id'];
+                $newArray[$key]['item_id'] = $value['item_id'];
+                $newArray[$key]['author'] = [
+                    'id' => $value['user_id'],
+                    'username' => $value['username'],
+                    'name' => $value['name'],
+                    'email' => $value['email'],
+                    'phone' => $value['phone'],
+                    'profileImageUrl' => $value['profile_image'],
+                ];
+                $newArray[$key]['item_name'] = $value['item_name'];
+                $newArray[$key]['description'] = $value['description'];
+                $newArray[$key]['initial_price'] = $value['initial_price'];
+                $newArray[$key]['winner_user_id'] = $value['winner_user_id'];
+                $newArray[$key]['status'] = $value['status'];
+                $newArray[$key]['created_at'] = $value['created_at'];
+                $newArray[$key]['images'] = $value['images'];
+            }
+            return $newArray;
+        }
+
+        $newArray['id'] = $data['auction_id'];
+        $newArray['item_id'] = $data['item_id'];
+        $newArray['author'] = [
+            'id' => $data['user_id'],
+            'username' => $data['username'],
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'profileImageUrl' => $data['profile_image'],
+        ];
+        $newArray['item_name'] = $data['item_name'];
+        $newArray['description'] = $data['description'];
+        $newArray['initial_price'] = $data['initial_price'];
+        $newArray['winner_user_id'] = $data['winner_user_id'];
+        $newArray['status'] = $data['status'];
+        $newArray['created_at'] = $data['created_at'];
+        $newArray['images'] = $data['images'];
+
+        return $newArray;
     }
 }
