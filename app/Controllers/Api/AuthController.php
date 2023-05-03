@@ -39,7 +39,9 @@ class AuthController extends BaseController
         $token = $jwt->token(
             userId: $user['user_id'],
             username: $user['username'],
-            email: $user['email']
+            name: $user['name'],
+            email: $user['email'],
+            phone: $user['phone']
         );
 
         return $this->respond(['status' => 200, 'token' => $token]);

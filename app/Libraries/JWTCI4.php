@@ -46,12 +46,14 @@ class JWTCI4
       return $this;
    }
 
-   public function token($userId, $username, $email)
+   public function token($userId, $username, $name, $email, $phone)
    {
       $payload = [
          'user_id' => $userId,
          'username' => $username,
+         'name' => $name,
          'email' => $email,
+         'phone' => $phone,
          'iss' => $this->iss,
          'iat' => $this->iat,
          'exp' => $this->exp,
