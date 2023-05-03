@@ -21,6 +21,8 @@ class Auction extends ResourceController
         $this->userId = session()->getFlashdata('user_id');
     }
 
+    // Basic CRUD operation
+
     public function index()
     {
         $db = new AuctionModel;
@@ -62,6 +64,11 @@ class Auction extends ResourceController
         if (!$auction) {
             return $this->failNotFound('Auction not found');
         }
+
+        $userDb = new UserModel;
+        $winnerUser = $userDb->getUser(id: $auction['winner_user_id']);
+
+        $auction['winner'] = $winnerUser;
 
         $imageDb = new ImageModel;
         $images = $imageDb->findAll();
@@ -343,7 +350,15 @@ class Auction extends ResourceController
                 $newArray[$key]['item_name'] = $value['item_name'];
                 $newArray[$key]['description'] = $value['description'];
                 $newArray[$key]['initial_price'] = $value['initial_price'];
-                $newArray[$key]['winner_user_id'] = $value['winner_user_id'];
+                $newArray[$key]['final_price'] = $value['final_price'];
+                $newArray[$key]['winner'] = [
+                    'id' => $value['winner']['user_id'],
+                    'username' => $value['winner']['username'],
+                    'name' => $value['winner']['name'],
+                    'email' => $value['winner']['email'],
+                    'phone' => $value['winner']['phone'],
+                    'profileImageUrl' => $value['winner']['profile_image'],
+                ];
                 $newArray[$key]['status'] = $value['status'];
                 $newArray[$key]['created_at'] = $value['created_at'];
                 $newArray[$key]['images'] = $value['images'];
@@ -364,7 +379,15 @@ class Auction extends ResourceController
         $newArray['item_name'] = $data['item_name'];
         $newArray['description'] = $data['description'];
         $newArray['initial_price'] = $data['initial_price'];
-        $newArray['winner_user_id'] = $data['winner_user_id'];
+        $newArray['final_price'] = $data['final_price'];
+        $newArray['winner'] = [
+            'id' => $data['winner']['user_id'],
+            'username' => $data['winner']['username'],
+            'name' => $data['winner']['name'],
+            'email' => $data['winner']['email'],
+            'phone' => $data['winner']['phone'],
+            'profileImageUrl' => $data['winner']['profile_image'],
+        ];
         $newArray['status'] = $data['status'];
         $newArray['created_at'] = $data['created_at'];
         $newArray['images'] = $data['images'];
