@@ -37,7 +37,7 @@ class AuthController extends BaseController
 
         $jwt = new JWTCI4;
         $token = $jwt->token(
-            user_id: $user['user_id'],
+            userId: $user['user_id'],
             username: $user['username'],
             email: $user['email']
         );

@@ -31,15 +31,15 @@ class Services extends BaseService
      * }
      */
 
-    public static function verifyUser($user_id, $username, $email)
+    public static function verifyUser($userId, $username, $email)
     {
-        $user_db = new UserModel;
-        $user_exist = $user_db->getUserByIdUsernameEmail($user_id, $username, $email);
+        $userDb = new UserModel;
+        $userExist = $userDb->getUserByIdUsernameEmail($userId, $username, $email);
 
-        if (!$user_exist) return false;
+        if (!$userExist) return false;
 
         session()->setFlashdata([
-            'user_id' => $user_id,
+            'user_id' => $userId,
             'username' => $username,
             'email' => $email
         ]);
