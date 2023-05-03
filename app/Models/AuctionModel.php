@@ -85,4 +85,22 @@ class AuctionModel extends Model
             ->where($whereArray)
             ->findAll();
     }
+
+    public function getBidAuctions($userId)
+    {
+        return $this->select()
+            ->join(
+                '(SELECT bid_id, user_id, auction_id, bid_price, created_at bid_created_at FROM bids) bids',
+                'auctions.auction_id = bids.auction_id',
+                'right'
+            )
+            ->join('items', 'items.item_id = auctions.item_id', 'left')
+            ->join(
+                '(SELECT image_id, image, item_id image_item_id FROM images LIMIT 1) images',
+                'images.image_item_id = auctions.item_id',
+                'left'
+            )
+            ->where(['bids.user_id' => $userId])
+            ->findAll();
+    }
 }

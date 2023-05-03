@@ -6,6 +6,7 @@ use App\Models\AuctionModel;
 use App\Models\BidModel;
 use App\Models\ImageModel;
 use App\Models\ItemModel;
+use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use Config\Services;
@@ -181,6 +182,91 @@ class Auction extends ResourceController
         return $this->respondDeleted([
             'status' => 200,
             'messages' => ['success' => 'Auction successfully deleted']
+        ]);
+    }
+
+    // Additional operation
+
+    public function myAuctions()
+    {
+        $db = new AuctionModel;
+        $auctions = $db->getAuction(
+            where: ['items.user_id' => $this->userId],
+            allStatus: true
+        );
+
+        if (!$auctions) {
+            return $this->failNotFound('Auctions not found');
+        }
+
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
+        foreach ($auctions as $key1 => $value1) {
+            $imageArray = [];
+            foreach ($images as $key2 => $value2) {
+                if ($value1['item_id'] == $value2['item_id']) {
+                    array_push($imageArray, [
+                        'url' => Services::fullImageURL($value2['image'])
+                    ]);
+                }
+            }
+            $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
+        }
+
+        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
+
+        return $this->respond([
+            'status' => 200,
+            'messages' => ['success' => 'OK'],
+            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
+        ]);
+    }
+
+
+    /** Get user bid history  */
+    public function myBids()
+    {
+        $db = new AuctionModel;
+        $data = $db->getBidAuctions($this->userId);
+
+        if (!$data) {
+            return $this->failNotFound('Bids not found');
+        }
+
+        foreach ($data as $key => $value) {
+            if ($value['image']) {
+                $data[$key]['image'] = ['url' => Services::fullImageURL($value['image'])];
+            }
+        }
+
+        $newData = [];
+
+        foreach ($data as $key => $value) {
+            $newData[$key]['bid']['id'] = $value['bid_id'];
+            $newData[$key]['bid']['auction_id'] = $value['auction_id'];
+            $newData[$key]['bid']['bid_price'] = $value['bid_price'];
+            $newData[$key]['bid']['created_at'] = $value['bid_created_at'];
+
+            $newData[$key]['auction']['id'] = $value['auction_id'];
+            $newData[$key]['auction']['item_id'] = $value['item_id'];
+            $newData[$key]['auction']['user_id'] = $value['user_id'];
+            $newData[$key]['auction']['item_name'] = $value['item_name'];
+            $newData[$key]['auction']['description'] = $value['description'];
+            $newData[$key]['auction']['initial_price'] = $value['initial_price'];
+            $newData[$key]['auction']['winner_user_id'] = $value['winner_user_id'];
+            $newData[$key]['auction']['status'] = $value['status'];
+            $newData[$key]['auction']['created_at'] = $value['created_at'];
+            $newData[$key]['auction']['images'] = $value['image'];
+
+            $newData[$key] = Services::arrayKeyToCamelCase($newData[$key], nested: true);
+        }
+
+        return $this->respond([
+            'status' => 200,
+            'messages' => ['success' => 'OK'],
+            'data' => $newData,
+            // 'data' => Services::arrayKeyToCamelCase($newData, nested: true),
         ]);
     }
 

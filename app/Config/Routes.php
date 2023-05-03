@@ -49,6 +49,9 @@ $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $r
     $routes->resource('auction', ['controller' => 'Api\Auction']);
 
     $routes->resource('bid', ['controller' => 'Api\Bid']);
+
+    $routes->get('user/bid', 'Api\Auction::myBids');
+    $routes->get('user/auction', 'Api\Auction::myAuctions');
 });
 
 /*
