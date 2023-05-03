@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Api;
 
+use App\Models\AuctionModel;
 use App\Models\BidModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
@@ -17,6 +18,8 @@ class Bid extends ResourceController
     {
         $this->userId = session()->getFlashdata('user_id');
     }
+
+    // Basic CRUD operation
 
     public function index()
     {
@@ -95,6 +98,13 @@ class Bid extends ResourceController
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
 
+        $auctionDb = new AuctionModel;
+        $checkAuction = $auctionDb->find($this->request->getVar('auctionId'));
+
+        if ($checkAuction) {
+            return $this->failNotFound(description: 'Failed to place bid, auction not found');
+        }
+
         $insert = [
             'user_id'       => $this->userId,
             'auction_id'     => $this->request->getVar('auctionId'),
@@ -169,6 +179,8 @@ class Bid extends ResourceController
             'messages' => ['success' => 'Bid successfully deleted']
         ]);
     }
+
+    // Additional operation
 
     private function tidyingResponseData(array $data, $nested = FALSE): array
     {
