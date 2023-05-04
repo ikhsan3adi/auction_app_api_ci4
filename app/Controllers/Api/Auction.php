@@ -228,38 +228,55 @@ class Auction extends ResourceController
     public function myBids()
     {
         $db = new AuctionModel;
-        $data = $db->getBidAuctions($this->userId);
+        $auctions = $db->getBidAuctions($this->userId);
 
-        if (!$data) {
+        if (!$auctions) {
             return $this->failNotFound('Bids not found');
         }
 
-        foreach ($data as $key => $value) {
+        foreach ($auctions as $key => $value) {
             if ($value['image']) {
-                $data[$key]['image'] = ['url' => Services::fullImageURL($value['image'])];
+                $auctions[$key]['image'] = ['url' => Services::fullImageURL($value['image'])];
             }
+        }
+
+        $db = new BidModel;
+        $bids = $db->getBid(where: ['users.user_id' => $this->userId]);
+
+        if (!$bids) {
+            return $this->failNotFound('Bids not found');
         }
 
         $newData = [];
 
-        foreach ($data as $key => $value) {
-            $newData[$key]['bid']['id'] = $value['bid_id'];
-            $newData[$key]['bid']['auction_id'] = $value['auction_id'];
-            $newData[$key]['bid']['bid_price'] = $value['bid_price'];
-            $newData[$key]['bid']['created_at'] = $value['bid_created_at'];
+        foreach ($auctions as $key1 => $value1) {
+            $_bids = [];
 
-            $newData[$key]['auction']['id'] = $value['auction_id'];
-            $newData[$key]['auction']['item_id'] = $value['item_id'];
-            $newData[$key]['auction']['user_id'] = $value['user_id'];
-            $newData[$key]['auction']['item_name'] = $value['item_name'];
-            $newData[$key]['auction']['description'] = $value['description'];
-            $newData[$key]['auction']['initial_price'] = $value['initial_price'];
-            $newData[$key]['auction']['winner_user_id'] = $value['winner_user_id'];
-            $newData[$key]['auction']['status'] = $value['status'];
-            $newData[$key]['auction']['created_at'] = $value['created_at'];
-            $newData[$key]['auction']['images'] = $value['image'];
+            foreach ($bids as $key2 => $value2) {
+                if ($value2['auction_id'] == $value1['auction_id']) {
+                    array_push($_bids, [
+                        'id' => $value2['bid_id'],
+                        'auctionId' => $value2['auction_id'],
+                        'bidPrice' => $value2['bid_price'],
+                        'createdAt' => $value2['created_at']
+                    ]);
+                }
+            }
 
-            $newData[$key] = Services::arrayKeyToCamelCase($newData[$key], nested: true);
+            $newData[$key1]['auction']['id'] = $value1['auction_id'];
+            $newData[$key1]['auction']['item_id'] = $value1['item_id'];
+            $newData[$key1]['auction']['user_id'] = $value1['user_id'];
+            $newData[$key1]['auction']['item_name'] = $value1['item_name'];
+            $newData[$key1]['auction']['description'] = $value1['description'];
+            $newData[$key1]['auction']['initial_price'] = $value1['initial_price'];
+            $newData[$key1]['auction']['winner_user_id'] = $value1['winner_user_id'];
+            $newData[$key1]['auction']['status'] = $value1['status'];
+            $newData[$key1]['auction']['created_at'] = $value1['created_at'];
+            $newData[$key1]['auction']['images'] = $value1['image'];
+
+            $newData[$key1]['bids'] = $_bids;
+
+            $newData[$key1] = Services::arrayKeyToCamelCase($newData[$key1], nested: true);
         }
 
         return $this->respond([

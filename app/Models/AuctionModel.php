@@ -90,9 +90,9 @@ class AuctionModel extends Model
     {
         return $this->select()
             ->join(
-                '(SELECT bid_id, user_id, auction_id, bid_price, created_at bid_created_at FROM bids) bids',
+                '(SELECT user_id bid_user_id, auction_id FROM bids GROUP BY auction_id) bids',
                 'auctions.auction_id = bids.auction_id',
-                'right'
+                'left'
             )
             ->join('items', 'items.item_id = auctions.item_id', 'left')
             ->join(
@@ -100,7 +100,11 @@ class AuctionModel extends Model
                 'images.image_item_id = auctions.item_id',
                 'left'
             )
-            ->where(['bids.user_id' => $userId])
+            ->where([
+                'bids.bid_user_id' => $userId,
+                'auctions.deleted_at' => NULL,
+                'items.deleted_at' => NULL
+            ])
             ->findAll();
     }
 }

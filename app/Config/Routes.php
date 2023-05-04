@@ -37,8 +37,6 @@ $routes->post('api/login', 'Api\AuthController::login', ['filter' => 'cors']);
 
 $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $routes) {
 
-    $routes->resource('user', ['controller' => 'Api\User']);
-
     $routes->resource('item', ['controller' => 'Api\Item']);
 
     $routes->get('auction/(:segment)/bids', 'Api\Bid::showBids/$1');
@@ -52,6 +50,8 @@ $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $r
 
     $routes->get('user/bid', 'Api\Auction::myBids');
     $routes->get('user/auction', 'Api\Auction::myAuctions');
+
+    $routes->resource('user', ['controller' => 'Api\User']);
 });
 
 /*
