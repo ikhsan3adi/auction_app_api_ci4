@@ -287,47 +287,14 @@ class Auction extends ResourceController
         ]);
     }
 
-    public function history()
+    public function showMyAuction($id = null)
     {
         $db = new AuctionModel;
-        $auctions = $db->getAuction(
-            status: 'closed',
-            where: $this->request->getVar('userId')
-                ? ['items.user_id' => $this->request->getVar('userId')] : NULL
+        $auction = $db->getAuction(
+            $id,
+            where: ['items.user_id' => $this->userId],
+            allStatus: true
         );
-
-        if (!$auctions) {
-            return $this->failNotFound('Auctions not found');
-        }
-
-        $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
-
-        foreach ($auctions as $key1 => $value1) {
-            $imageArray = [];
-            foreach ($images as $key2 => $value2) {
-                if ($value1['item_id'] == $value2['item_id']) {
-                    array_push($imageArray, [
-                        'url' => Services::fullImageURL($value2['image'])
-                    ]);
-                }
-            }
-            $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
-        }
-
-        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
-
-        return $this->respond([
-            'status' => 200,
-            'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
-        ]);
-    }
-
-    public function showHistory($id = null)
-    {
-        $db = new AuctionModel;
-        $auction = $db->getAuction($id, status: 'closed');
 
         if (!$auction) {
             return $this->failNotFound('Auction not found');
