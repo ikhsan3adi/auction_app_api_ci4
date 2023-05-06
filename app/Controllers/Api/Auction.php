@@ -36,6 +36,8 @@ class Auction extends ResourceController
         $imageDb = new ImageModel;
         $images = $imageDb->findAll();
 
+        $userDb = new UserModel;
+
         foreach ($auctions as $key1 => $value1) {
             $imageArray = [];
             foreach ($images as $key2 => $value2) {
@@ -45,6 +47,13 @@ class Auction extends ResourceController
                     ]);
                 }
             }
+
+            if ($value1['winner_user_id']) {
+                $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id']);
+            } else {
+                $auctions[$key1]['winner'] = null;
+            }
+
             $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
