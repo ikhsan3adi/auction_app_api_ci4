@@ -190,7 +190,7 @@ class Bid extends ResourceController
             foreach ($data as $key => $value) {
                 $newArray[$key]['id'] = $value['bid_id'];
                 $newArray[$key]['auction_id'] = $value['auction_id'];
-                $newArray[$key]['bid_price'] = $value['bid_price'];
+                $newArray[$key]['bid_price'] = intval($value['bid_price']);
                 $newArray[$key]['bidder'] = [
                     'id' => $value['user_id'],
                     'username' => $value['username'],
@@ -206,7 +206,7 @@ class Bid extends ResourceController
 
         $newArray['id'] = $data['bid_id'];
         $newArray['auction_id'] = $data['auction_id'];
-        $newArray['bid_price'] = $data['bid_price'];
+        $newArray['bid_price'] = intval($data['bid_price']);
         $newArray['bidder'] = [
             'id' => $data['user_id'],
             'username' => $data['username'],

@@ -232,8 +232,7 @@ class Auction extends ResourceController
         ]);
     }
 
-
-    /** Get user bid history  */
+    /** Get user bid  */
     public function myBids()
     {
         $db = new AuctionModel;
@@ -277,7 +276,8 @@ class Auction extends ResourceController
             $newData[$key1]['auction']['user_id'] = $value1['user_id'];
             $newData[$key1]['auction']['item_name'] = $value1['item_name'];
             $newData[$key1]['auction']['description'] = $value1['description'];
-            $newData[$key1]['auction']['initial_price'] = $value1['initial_price'];
+            $newData[$key1]['auction']['initial_price'] = intval($value1['initial_price']);
+            $newData[$key1]['auction']['final_price'] = $value1['final_price'] ? intval($value1['final_price']) : null;
             $newData[$key1]['auction']['winner_user_id'] = $value1['winner_user_id'];
             $newData[$key1]['auction']['status'] = $value1['status'];
             $newData[$key1]['auction']['created_at'] = $value1['created_at'];
@@ -428,16 +428,16 @@ class Auction extends ResourceController
                 ];
                 $newArray[$key]['item_name'] = $value['item_name'];
                 $newArray[$key]['description'] = $value['description'];
-                $newArray[$key]['initial_price'] = $value['initial_price'];
-                $newArray[$key]['final_price'] = $value['final_price'];
-                $newArray[$key]['winner'] = [
+                $newArray[$key]['initial_price'] = intval($value['initial_price']);
+                $newArray[$key]['final_price'] = $value['final_price'] ? intval($value['final_price']) : null;
+                $newArray[$key]['winner'] = $value['winner'] ? [
                     'id' => $value['winner']['user_id'],
                     'username' => $value['winner']['username'],
                     'name' => $value['winner']['name'],
                     'email' => $value['winner']['email'],
                     'phone' => $value['winner']['phone'],
                     'profileImageUrl' => $value['winner']['profile_image'],
-                ];
+                ] : null;
                 $newArray[$key]['status'] = $value['status'];
                 $newArray[$key]['created_at'] = $value['created_at'];
                 $newArray[$key]['images'] = $value['images'];
@@ -458,15 +458,15 @@ class Auction extends ResourceController
         $newArray['item_name'] = $data['item_name'];
         $newArray['description'] = $data['description'];
         $newArray['initial_price'] = $data['initial_price'];
-        $newArray['final_price'] = $data['final_price'];
-        $newArray['winner'] = [
+        $newArray['final_price'] = $data['final_price'] ? $data['final_price'] : null;
+        $newArray['winner'] = $data['winner'] ? [
             'id' => $data['winner']['user_id'],
             'username' => $data['winner']['username'],
             'name' => $data['winner']['name'],
             'email' => $data['winner']['email'],
             'phone' => $data['winner']['phone'],
             'profileImageUrl' => $data['winner']['profile_image'],
-        ];
+        ] : null;
         $newArray['status'] = $data['status'];
         $newArray['created_at'] = $data['created_at'];
         $newArray['images'] = $data['images'];

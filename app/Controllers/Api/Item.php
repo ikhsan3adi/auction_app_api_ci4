@@ -188,7 +188,7 @@ class Item extends BaseController
                 $newArray[$key]['user_id'] = $value['user_id'];
                 $newArray[$key]['item_name'] = $value['item_name'];
                 $newArray[$key]['description'] = $value['description'];
-                $newArray[$key]['initial_price'] = $value['initial_price'];
+                $newArray[$key]['initial_price'] = intval($value['initial_price']);
                 $newArray[$key]['created_at'] = $value['created_at'];
                 $newArray[$key]['images'] = $value['images'];
             }
@@ -199,7 +199,7 @@ class Item extends BaseController
         $newArray['user_id'] = $data['user_id'];
         $newArray['item_name'] = $data['item_name'];
         $newArray['description'] = $data['description'];
-        $newArray['initial_price'] = $data['initial_price'];
+        $newArray['initial_price'] = intval($data['initial_price']);
         $newArray['created_at'] = $data['created_at'];
         $newArray['images'] = $data['images'];
 
