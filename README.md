@@ -1,6 +1,6 @@
 # Online Auction Api
 
-[![PHP Composer](https://github.com/x4nn/ci4_online_auction_api/actions/workflows/php.yml/badge.svg)](https://github.com/x4nn/ci4_online_auction_api/actions/workflows/php.yml)
+[![PHP Composer](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml/badge.svg)](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml)
 
  REST API for [Auction App Flutter](https://github.com/ikhsan3adi/AuctionApp) using Codeigniter 4
 
