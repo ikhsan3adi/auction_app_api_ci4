@@ -30,7 +30,7 @@ class User extends ResourceController
 
         foreach ($users as $key => $value) {
             if ($value['profile_image']) {
-                $users[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
+                $users[$key]['profile_image'] = Services::fullProfileImageURL($value['profile_image']);
             }
         }
 
@@ -53,7 +53,7 @@ class User extends ResourceController
         }
 
         if ($user['profile_image']) {
-            $user['profile_image'] = Services::fullImageURL($user['profile_image']);
+            $user['profile_image'] = Services::fullProfileImageURL($user['profile_image']);
         }
 
         $user = $this->tidyingResponseData($user);
