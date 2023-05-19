@@ -27,7 +27,7 @@ class Auction extends ResourceController
     public function index()
     {
         $db = new AuctionModel;
-        $auctions = $db->getAuction();
+        $auctions = $db->getAuction(page: intval($this->request->getGet('page')));
 
         if (!$auctions) {
             return $this->failNotFound('Auctions not found');

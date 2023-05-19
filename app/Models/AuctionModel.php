@@ -46,7 +46,7 @@ class AuctionModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 
-    public function getAuction($id = NULL, $status = 'open', $where = NULL, $allStatus = false)
+    public function getAuction($id = NULL, $status = 'open', $where = NULL, $allStatus = false, $page = 1)
     {
         $select = 'auctions.auction_id, items.item_id, items.user_id, users.username, users.name, users.email, users.phone, users.profile_image, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at';
 
@@ -83,7 +83,7 @@ class AuctionModel extends Model
             ->join('auctions', 'auctions.item_id = items.item_id', 'inner')
             ->join('users', 'auctions.user_id = users.user_id', 'inner')
             ->where($whereArray)
-            ->findAll();
+            ->paginate(perPage: 20, page: $page);
     }
 
     public function getBidAuctions($userId)
