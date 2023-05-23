@@ -55,6 +55,7 @@ class Bid extends ResourceController
                 if ($value['profile_image']) {
                     $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
                 }
+                $bids[$key]['mine'] = $bids[$key]['user_id'] == $this->userId;
             }
         }
 
@@ -200,6 +201,7 @@ class Bid extends ResourceController
                     'profileImageUrl' => $value['profile_image'],
                 ];
                 $newArray[$key]['created_at'] = $value['created_at'];
+                $newArray[$key]['mine'] = $value['mine'];
             }
             return $newArray;
         }
@@ -216,6 +218,7 @@ class Bid extends ResourceController
             'profileImageUrl' => $data['profile_image'],
         ];
         $newArray['created_at'] = $data['created_at'];
+        $newArray['mine'] = $data['mine'];
 
         return $newArray;
     }
