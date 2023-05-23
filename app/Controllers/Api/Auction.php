@@ -48,21 +48,17 @@ class Auction extends ResourceController
                 }
             }
 
-            if ($value1['winner_user_id']) {
-                $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id']);
-            } else {
-                $auctions[$key1]['winner'] = null;
-            }
+            $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
+
+            $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id'] ?? -69);
 
             $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
-        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
-
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
+            'data' => $auctions,
         ]);
     }
 
@@ -76,9 +72,10 @@ class Auction extends ResourceController
         }
 
         $userDb = new UserModel;
-        $winnerUser = $userDb->getUser(id: $auction['winner_user_id']);
 
-        $auction['winner'] = $winnerUser;
+        $auction['author'] = $userDb->getUser(id: $auction['user_id'] ?? -69);
+
+        $auction['winner'] = $userDb->getUser(id: $auction['winner_user_id'] ?? -69);
 
         $imageDb = new ImageModel;
         $images = $imageDb->findAll();
@@ -93,12 +90,10 @@ class Auction extends ResourceController
         }
         $auction['images'] = $imageArray != [] ? $imageArray : null;
 
-        $auction = $this->tidyingResponseData($auction);
-
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($auction, nested: false),
+            'data' => $auction,
         ]);
     }
 
@@ -195,7 +190,7 @@ class Auction extends ResourceController
     }
 
     // Additional operation
-
+    /** Get user auction */
     public function myAuctions()
     {
         $db = new AuctionModel;
@@ -211,6 +206,8 @@ class Auction extends ResourceController
         $imageDb = new ImageModel;
         $images = $imageDb->findAll();
 
+        $userDb = new UserModel;
+
         foreach ($auctions as $key1 => $value1) {
             $imageArray = [];
             foreach ($images as $key2 => $value2) {
@@ -220,15 +217,18 @@ class Auction extends ResourceController
                     ]);
                 }
             }
+
+            $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
+
+            $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id'] ?? -69);
+
             $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
-
-        $auctions = $this->tidyingResponseData($auctions, nested: TRUE);
 
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($auctions, nested: true),
+            'data' => $auctions,
         ]);
     }
 
@@ -242,12 +242,6 @@ class Auction extends ResourceController
             return $this->failNotFound('Bids not found');
         }
 
-        foreach ($auctions as $key => $value) {
-            if ($value['image']) {
-                $auctions[$key]['image'] = ['url' => Services::fullImageURL($value['image'])];
-            }
-        }
-
         $db = new BidModel;
         $bids = $db->getBid(where: ['users.user_id' => $this->userId]);
 
@@ -255,47 +249,42 @@ class Auction extends ResourceController
             return $this->failNotFound('Bids not found');
         }
 
+        $imageDb = new ImageModel;
+        $images = $imageDb->findAll();
+
         $newData = [];
 
         foreach ($auctions as $key1 => $value1) {
             $_bids = [];
 
             foreach ($bids as $key2 => $value2) {
-                if ($value2['auction_id'] == $value1['auction_id']) {
-                    array_push($_bids, [
-                        'id' => $value2['bid_id'],
-                        'auctionId' => $value2['auction_id'],
-                        'bidPrice' => $value2['bid_price'],
-                        'createdAt' => $value2['created_at']
+                if ($value2['auction_id'] == $value1['auction_id']) array_push($_bids, $value2);
+            }
+
+            $imageArray = [];
+            foreach ($images as $key2 => $value2) {
+                if ($value1['item_id'] == $value2['item_id']) {
+                    array_push($imageArray, [
+                        'url' => Services::fullImageURL($value2['image'])
                     ]);
                 }
             }
 
-            $newData[$key1]['auction']['id'] = $value1['auction_id'];
-            $newData[$key1]['auction']['item_id'] = $value1['item_id'];
-            $newData[$key1]['auction']['user_id'] = $value1['user_id'];
-            $newData[$key1]['auction']['item_name'] = $value1['item_name'];
-            $newData[$key1]['auction']['description'] = $value1['description'];
-            $newData[$key1]['auction']['initial_price'] = intval($value1['initial_price']);
-            $newData[$key1]['auction']['final_price'] = $value1['final_price'] ? intval($value1['final_price']) : null;
-            $newData[$key1]['auction']['winner_user_id'] = $value1['winner_user_id'];
-            $newData[$key1]['auction']['status'] = $value1['status'];
-            $newData[$key1]['auction']['created_at'] = $value1['created_at'];
-            $newData[$key1]['auction']['images'] = $value1['image'];
+            $newData[$key1]['auction'] = $value1;
+
+            $newData[$key1]['auction']['images'] = $imageArray != [] ? $imageArray : null;
 
             $newData[$key1]['bids'] = $_bids;
-
-            $newData[$key1] = Services::arrayKeyToCamelCase($newData[$key1], nested: true);
         }
 
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
             'data' => $newData,
-            // 'data' => Services::arrayKeyToCamelCase($newData, nested: true),
         ]);
     }
 
+    /** Get single user auction */
     public function showMyAuction($id = null)
     {
         $db = new AuctionModel;
@@ -322,12 +311,10 @@ class Auction extends ResourceController
         }
         $auction['images'] = $imageArray != [] ? $imageArray : null;
 
-        $auction = $this->tidyingResponseData($auction);
-
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($auction, nested: false),
+            'data' => $auction,
         ]);
     }
 
@@ -408,69 +395,5 @@ class Auction extends ResourceController
                 'success' => 'Auction status successfully changed'
             ]
         ]);
-    }
-
-    private function tidyingResponseData(array $data, $nested = FALSE): array
-    {
-        $newArray = [];
-
-        if ($nested) {
-            foreach ($data as $key => $value) {
-                $newArray[$key]['id'] = $value['auction_id'];
-                $newArray[$key]['item_id'] = $value['item_id'];
-                $newArray[$key]['author'] = [
-                    'id' => $value['user_id'],
-                    'username' => $value['username'],
-                    'name' => $value['name'],
-                    'email' => $value['email'],
-                    'phone' => $value['phone'],
-                    'profileImageUrl' => $value['profile_image'],
-                ];
-                $newArray[$key]['item_name'] = $value['item_name'];
-                $newArray[$key]['description'] = $value['description'];
-                $newArray[$key]['initial_price'] = intval($value['initial_price']);
-                $newArray[$key]['final_price'] = $value['final_price'] ? intval($value['final_price']) : null;
-                $newArray[$key]['winner'] = $value['winner'] ? [
-                    'id' => $value['winner']['user_id'],
-                    'username' => $value['winner']['username'],
-                    'name' => $value['winner']['name'],
-                    'email' => $value['winner']['email'],
-                    'phone' => $value['winner']['phone'],
-                    'profileImageUrl' => $value['winner']['profile_image'],
-                ] : null;
-                $newArray[$key]['status'] = $value['status'];
-                $newArray[$key]['created_at'] = $value['created_at'];
-                $newArray[$key]['images'] = $value['images'];
-            }
-            return $newArray;
-        }
-
-        $newArray['id'] = $data['auction_id'];
-        $newArray['item_id'] = $data['item_id'];
-        $newArray['author'] = [
-            'id' => $data['user_id'],
-            'username' => $data['username'],
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'],
-            'profileImageUrl' => $data['profile_image'],
-        ];
-        $newArray['item_name'] = $data['item_name'];
-        $newArray['description'] = $data['description'];
-        $newArray['initial_price'] = $data['initial_price'];
-        $newArray['final_price'] = $data['final_price'] ? $data['final_price'] : null;
-        $newArray['winner'] = $data['winner'] ? [
-            'id' => $data['winner']['user_id'],
-            'username' => $data['winner']['username'],
-            'name' => $data['winner']['name'],
-            'email' => $data['winner']['email'],
-            'phone' => $data['winner']['phone'],
-            'profileImageUrl' => $data['winner']['profile_image'],
-        ] : null;
-        $newArray['status'] = $data['status'];
-        $newArray['created_at'] = $data['created_at'];
-        $newArray['images'] = $data['images'];
-
-        return $newArray;
     }
 }
