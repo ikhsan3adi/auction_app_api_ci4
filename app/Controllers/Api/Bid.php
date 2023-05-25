@@ -4,6 +4,7 @@ namespace App\Controllers\Api;
 
 use App\Models\AuctionModel;
 use App\Models\BidModel;
+use App\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
 use CodeIgniter\API\ResponseTrait;
 use Config\Services;
@@ -30,12 +31,17 @@ class Bid extends ResourceController
             return $this->failNotFound('Bids not found');
         }
 
+        $userDb = new UserModel;
+
         foreach ($bids as $key => $value) {
             if ($value['profile_image']) {
                 $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
             }
-        }
 
+            $bids[$key]['bidder'] = $userDb->getUser(id: $value['user_id'] ?? -69);
+
+            $bids[$key]['mine'] = $bids[$key]['user_id'] == $this->userId;
+        }
 
         return $this->respond([
             'status' => 200,
@@ -50,14 +56,17 @@ class Bid extends ResourceController
         $bids = $db->getBid(where: ['auction_id' => $auctionId]);
 
         if ($bids) {
+            $userDb = new UserModel;
+
             foreach ($bids as $key => $value) {
                 if ($value['profile_image']) {
                     $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
                 }
                 $bids[$key]['mine'] = $bids[$key]['user_id'] == $this->userId;
             }
-        }
 
+            $bids[$key]['bidder'] = $userDb->getUser(id: $value['user_id'] ?? -69);
+        }
 
         return $this->respond([
             'status' => 200,
@@ -75,10 +84,13 @@ class Bid extends ResourceController
             return $this->failNotFound('Bid not found');
         }
 
-        if ($bid['profile_image']) {
-            $bid['profile_image'] = Services::fullImageURL($bid['profile_image']);
-        }
+        $userDb = new UserModel;
 
+        $bid['bidder'] = $userDb->getUser(id: $value['user_id'] ?? -69);
+
+        if ($bid['bidder']['profile_image']) {
+            $bid['bidder']['profile_image'] = Services::fullImageURL($bid['bidder']['profile_image']);
+        }
 
         return $this->respond([
             'status' => 200,

@@ -34,25 +34,21 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
         $userDb = new UserModel;
 
         foreach ($auctions as $key1 => $value1) {
-            $imageArray = [];
-            foreach ($images as $key2 => $value2) {
-                if ($value1['item_id'] == $value2['item_id']) {
-                    array_push($imageArray, [
-                        'url' => Services::fullImageURL($value2['image'])
-                    ]);
+            $imageArray = $imageDb->where(['item_id' => $value1['item_id']])->findAll();
+
+            if ($imageArray) {
+                foreach ($imageArray as $key2 => $value2) {
+                    $auctions[$key1]['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
 
             $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
 
             $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id'] ?? -69);
-
-            $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
         return $this->respond([
@@ -78,17 +74,14 @@ class Auction extends ResourceController
         $auction['winner'] = $userDb->getUser(id: $auction['winner_user_id'] ?? -69);
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
-        $imageArray = [];
-        foreach ($images as $key2 => $value2) {
-            if ($auction['item_id'] == $value2['item_id']) {
-                array_push($imageArray, [
-                    'url' => Services::fullImageURL($value2['image'])
-                ]);
+        $imageArray = $imageDb->where(['item_id' => $auction['item_id']])->findAll();
+
+        if ($imageArray) {
+            foreach ($imageArray as $key2 => $value2) {
+                $auction['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
             }
         }
-        $auction['images'] = $imageArray != [] ? $imageArray : null;
 
         return $this->respond([
             'status' => 200,
@@ -204,25 +197,21 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
         $userDb = new UserModel;
 
         foreach ($auctions as $key1 => $value1) {
-            $imageArray = [];
-            foreach ($images as $key2 => $value2) {
-                if ($value1['item_id'] == $value2['item_id']) {
-                    array_push($imageArray, [
-                        'url' => Services::fullImageURL($value2['image'])
-                    ]);
+            $imageArray = $imageDb->where(['item_id' => $value1['item_id']])->findAll();
+
+            if ($imageArray) {
+                foreach ($imageArray as $key2 => $value2) {
+                    $auctions[$key1]['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
 
             $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
 
             $auctions[$key1]['winner'] = $userDb->getUser(id: $value1['winner_user_id'] ?? -69);
-
-            $auctions[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
         return $this->respond([
@@ -243,14 +232,13 @@ class Auction extends ResourceController
         }
 
         $db = new BidModel;
-        $bids = $db->getBid(where: ['users.user_id' => $this->userId]);
+        $bids = $db->getBid(where: ['user_id' => $this->userId]);
 
         if (!$bids) {
             return $this->failNotFound('Bids not found');
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
         $newData = [];
 
@@ -261,18 +249,15 @@ class Auction extends ResourceController
                 if ($value2['auction_id'] == $value1['auction_id']) array_push($_bids, $value2);
             }
 
-            $imageArray = [];
-            foreach ($images as $key2 => $value2) {
-                if ($value1['item_id'] == $value2['item_id']) {
-                    array_push($imageArray, [
-                        'url' => Services::fullImageURL($value2['image'])
-                    ]);
-                }
-            }
-
             $newData[$key1]['auction'] = $value1;
 
-            $newData[$key1]['auction']['images'] = $imageArray != [] ? $imageArray : null;
+            $imageArray = $imageDb->where(['item_id' => $value1['item_id']])->findAll();
+
+            if ($imageArray) {
+                foreach ($imageArray as $key2 => $value2) {
+                    $newData[$key1]['auction']['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
+                }
+            }
 
             $newData[$key1]['bids'] = $_bids;
         }
@@ -299,17 +284,14 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
-        $imageArray = [];
-        foreach ($images as $key2 => $value2) {
-            if ($auction['item_id'] == $value2['item_id']) {
-                array_push($imageArray, [
-                    'url' => Services::fullImageURL($value2['image'])
-                ]);
+        $imageArray = $imageDb->where(['item_id' => $auction['item_id']])->findAll();
+
+        if ($imageArray) {
+            foreach ($imageArray as $key2 => $value2) {
+                $auction['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
             }
         }
-        $auction['images'] = $imageArray != [] ? $imageArray : null;
 
         return $this->respond([
             'status' => 200,

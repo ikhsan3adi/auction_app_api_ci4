@@ -29,18 +29,16 @@ class Item extends BaseController
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
         foreach ($items as $key1 => $value1) {
-            $imageArray = [];
-            foreach ($images as $key2 => $value2) {
-                if ($value1['item_id'] == $value2['item_id']) {
-                    array_push($imageArray, [
-                        'id' => $value2['image_id'],
-                        'url' => Services::fullImageURL($value2['image'])
-                    ]);
+            $imageArray = $imageDb->where(['item_id' => $value1['item_id']])->findAll();
+
+            if ($imageArray) {
+                foreach ($imageArray as $key2 => $value2) {
+                    $imageArray[$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
+
             $items[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
@@ -61,15 +59,12 @@ class Item extends BaseController
         }
 
         $imageDb = new ImageModel;
-        $images = $imageDb->findAll();
 
-        $imageArray = [];
-        foreach ($images as $key2 => $value2) {
-            if ($item['item_id'] == $value2['item_id']) {
-                array_push($imageArray, [
-                    'id' => $value2['image_id'],
-                    'url' => Services::fullImageURL($value2['image'])
-                ]);
+        $imageArray = $imageDb->where(['item_id' => $item['item_id']])->findAll();
+
+        if ($imageArray) {
+            foreach ($imageArray as $key => $value) {
+                $imageArray[$key]['image'] = Services::fullImageURL($value['image']);
             }
         }
 

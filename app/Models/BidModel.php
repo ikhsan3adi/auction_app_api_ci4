@@ -42,12 +42,7 @@ class BidModel extends Model
 
     public function getBid($id = NULL, $where = NULL)
     {
-        $select = 'bids.bid_id, bids.auction_id, bids.bid_price, users.user_id, users.username, users.name, users.email, users.phone, users.profile_image, bids.created_at';
-
-        $whereArray = [
-            'users.deleted_at' => NULL,
-            'bids.deleted_at' => NULL
-        ];
+        $whereArray = [];
 
         if ($where) {
             foreach ($where as $key => $value) {
@@ -57,17 +52,9 @@ class BidModel extends Model
 
         if ($id) {
             $whereArray[$this->primaryKey] = $id;
-            return $this->setTable('users')
-                ->select($select)
-                ->join('bids', 'bids.user_id = users.user_id', 'inner')
-                ->where($whereArray)
-                ->first();
+            return $this->select()->where($whereArray)->first();
         }
 
-        return $this->setTable('users')
-            ->select($select)
-            ->join('bids', 'bids.user_id = users.user_id', 'inner')
-            ->where($whereArray)
-            ->findAll();
+        return $this->select()->where($whereArray)->findAll();
     }
 }
