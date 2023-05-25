@@ -44,12 +44,10 @@ class Item extends BaseController
             $items[$key1]['images'] = $imageArray != [] ? $imageArray : null;
         }
 
-        $items = $this->tidyingResponseData($items, nested: TRUE);
-
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($items, nested: true),
+            'data' => $items,
         ]);
     }
 
@@ -74,14 +72,13 @@ class Item extends BaseController
                 ]);
             }
         }
-        $item['images'] = $imageArray != [] ? $imageArray : null;
 
-        $item = $this->tidyingResponseData($item);
+        $item['images'] = $imageArray != [] ? $imageArray : null;
 
         return $this->respond([
             'status' => 200,
             'messages' => ['success' => 'OK'],
-            'data' => Services::arrayKeyToCamelCase($item, nested: false),
+            'data' => $item,
         ]);
     }
 
@@ -175,34 +172,5 @@ class Item extends BaseController
             'status' => 200,
             'messages' => ['success' => 'Item successfully deleted']
         ]);
-    }
-
-
-    private function tidyingResponseData(array $data, $nested = FALSE): array
-    {
-        $newArray = [];
-
-        if ($nested) {
-            foreach ($data as $key => $value) {
-                $newArray[$key]['id'] = $value['item_id'];
-                $newArray[$key]['user_id'] = $value['user_id'];
-                $newArray[$key]['item_name'] = $value['item_name'];
-                $newArray[$key]['description'] = $value['description'];
-                $newArray[$key]['initial_price'] = intval($value['initial_price']);
-                $newArray[$key]['created_at'] = $value['created_at'];
-                $newArray[$key]['images'] = $value['images'];
-            }
-            return $newArray;
-        }
-
-        $newArray['id'] = $data['item_id'];
-        $newArray['user_id'] = $data['user_id'];
-        $newArray['item_name'] = $data['item_name'];
-        $newArray['description'] = $data['description'];
-        $newArray['initial_price'] = intval($data['initial_price']);
-        $newArray['created_at'] = $data['created_at'];
-        $newArray['images'] = $data['images'];
-
-        return $newArray;
     }
 }
