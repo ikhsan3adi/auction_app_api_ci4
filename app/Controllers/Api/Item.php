@@ -89,9 +89,9 @@ class Item extends BaseController
     {
         if (!$this->validate([
             // 'user_id'       => 'required|numeric',
-            'itemName'     => 'required',
+            'item_name'     => 'required',
             'description'   => 'required',
-            'initialPrice' => 'required|numeric',
+            'initial_price' => 'required|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -99,9 +99,9 @@ class Item extends BaseController
         $insert = [
             // 'user_id'       => $this->request->getVar('user_id'),
             'user_id'       => $this->userId,
-            'item_name'     => $this->request->getVar('itemName'),
+            'item_name'     => $this->request->getVar('item_name'),
             'description'   => $this->request->getVar('description'),
-            'initial_price' => $this->request->getVar('initialPrice'),
+            'initial_price' => $this->request->getVar('initial_price'),
         ];
 
         $db = new ItemModel;
@@ -120,10 +120,10 @@ class Item extends BaseController
     public function update($id = null)
     {
         if (!$this->validate([
-            'userId'       => 'permit_empty|numeric',
-            'itemName'     => 'permit_empty',
+            'user_id'       => 'permit_empty|numeric',
+            'item_name'     => 'permit_empty',
             'description'   => 'permit_empty',
-            'initialPrice' => 'permit_empty|numeric',
+            'initial_price' => 'permit_empty|numeric',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -136,14 +136,14 @@ class Item extends BaseController
         }
 
         $update = [
-            // 'user_id' => $this->request->getRawInputVar('userId')
+            // 'user_id' => $this->request->getRawInputVar('user_id')
             //     ?? $exist['userId'],
-            'item_name' => $this->request->getRawInputVar('itemName')
-                ?? $exist['itemName'],
+            'item_name' => $this->request->getRawInputVar('item_name')
+                ?? $exist['item_name'],
             'description' => $this->request->getRawInputVar('description')
                 ?? $exist['description'],
-            'initial_price' => $this->request->getRawInputVar('initialPrice')
-                ?? $exist['initialPrice']
+            'initial_price' => $this->request->getRawInputVar('initial_price')
+                ?? $exist['initial_price']
         ];
 
         $save = $db->update($id, $update);
