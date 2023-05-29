@@ -34,7 +34,7 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
-
+        $bidDb = new BidModel;
         $userDb = new UserModel;
 
         foreach ($auctions as $key1 => $value1) {
@@ -45,6 +45,8 @@ class Auction extends ResourceController
                     $auctions[$key1]['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
+
+            $auctions[$key1]['bid_count'] = count($bidDb->getBid(where: ['auction_id' => $auctions[$key1]['auction_id']]));
 
             $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
 
@@ -61,7 +63,7 @@ class Auction extends ResourceController
     public function show($id = null)
     {
         $db = new AuctionModel;
-        $auction = $db->getAuction($id);
+        $auction = $db->getAuction($id, allStatus: true);
 
         if (!$auction) {
             return $this->failNotFound('Auction not found');
@@ -239,6 +241,7 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
+        $userDb = new UserModel;
 
         $newData = [];
 
@@ -251,6 +254,7 @@ class Auction extends ResourceController
 
             $newData[$key1]['auction'] = $value1;
 
+
             $imageArray = $imageDb->where(['item_id' => $value1['item_id']])->findAll();
 
             if ($imageArray) {
@@ -258,6 +262,10 @@ class Auction extends ResourceController
                     $newData[$key1]['auction']['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
+
+            $newData[$key1]['auction']['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
+
+            $newData[$key1]['auction']['winner'] = $userDb->getUser(id: $value1['winner_user_id'] ?? -69);
 
             $newData[$key1]['bids'] = $_bids;
         }
