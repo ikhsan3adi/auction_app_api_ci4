@@ -59,13 +59,16 @@ class Bid extends ResourceController
             $userDb = new UserModel;
 
             foreach ($bids as $key => $value) {
-                if ($value['profile_image']) {
-                    $bids[$key]['profile_image'] = Services::fullImageURL($value['profile_image']);
+                $bids[$key]['bidder'] = $userDb->getUser(id: $value['user_id'] ?? -69);
+
+                if ($bids[$key]['bidder']['profile_image']) {
+                    $bids[$key]['profile_image'] = Services::fullImageURL($bids[$key]['bidder']['profile_image']);
+                } else {
+                    $bids[$key]['profile_image'] = null;
                 }
+
                 $bids[$key]['mine'] = $bids[$key]['user_id'] == $this->userId;
             }
-
-            $bids[$key]['bidder'] = $userDb->getUser(id: $value['user_id'] ?? -69);
         }
 
         return $this->respond([
@@ -111,7 +114,7 @@ class Bid extends ResourceController
         $auctionDb = new AuctionModel;
         $checkAuction = $auctionDb->find($this->request->getVar('auction_id'));
 
-        if ($checkAuction) {
+        if (!$checkAuction) {
             return $this->failNotFound(description: 'Failed to place bid, auction not found');
         }
 
