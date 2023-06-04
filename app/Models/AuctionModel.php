@@ -20,6 +20,7 @@ class AuctionModel extends Model
         'final_price',
         'winner_user_id',
         'status',
+        'date_completed',
     ];
 
     // Dates
@@ -48,7 +49,7 @@ class AuctionModel extends Model
 
     public function getAuction($id = NULL, $status = 'open', $where = NULL, $allStatus = false, $page = 1)
     {
-        $select = 'auctions.auction_id, items.item_id, items.user_id, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.created_at';
+        $select = 'auctions.auction_id, items.item_id, items.user_id, item_name, description, items.initial_price, auctions.final_price, auctions.winner_user_id, auctions.status, auctions.date_completed, auctions.created_at';
 
         if ($allStatus) {
             $whereArray = [

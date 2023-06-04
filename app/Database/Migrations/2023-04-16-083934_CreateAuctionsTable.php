@@ -43,6 +43,10 @@ class CreateAuctionsTable extends Migration
                 'constraint'     => ['open', 'closed'],
                 'default'        => 'open',
             ],
+            'date_completed' => [
+                'type'           => 'DATETIME',
+                'null'           => true,
+            ],
             'created_at' => [
                 'type'           => 'DATETIME',
                 'default'        => 'CURRENT_TIMESTAMP',
