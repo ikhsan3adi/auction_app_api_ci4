@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
+use App\Models\AuctionModel;
 use App\Models\ImageModel;
 use App\Models\ItemModel;
 use CodeIgniter\API\ResponseTrait;
@@ -28,6 +29,7 @@ class Item extends BaseController
             return $this->failNotFound('Items not found');
         }
 
+        $auctionDb = new AuctionModel;
         $imageDb = new ImageModel;
 
         foreach ($items as $key1 => $value1) {
@@ -39,7 +41,9 @@ class Item extends BaseController
                 }
             }
 
-            $items[$key1]['images'] = $imageArray != [] ? $imageArray : null;
+            $items[$key1]['auctioned'] = !empty($auctionDb->where(['item_id' => $value1['item_id']])->findAll(limit: 1));
+
+            $items[$key1]['images'] = $imageArray != null ? $imageArray : [];
         }
 
         return $this->respond([
@@ -58,6 +62,7 @@ class Item extends BaseController
             return $this->failNotFound('Item not found');
         }
 
+        $auctionDb = new AuctionModel;
         $imageDb = new ImageModel;
 
         $imageArray = $imageDb->where(['item_id' => $item['item_id']])->findAll();
@@ -67,6 +72,8 @@ class Item extends BaseController
                 $imageArray[$key]['image'] = Services::fullImageURL($value['image']);
             }
         }
+
+        $item['auctioned'] = !empty($auctionDb->where(['item_id' => $item['item_id']])->findAll(limit: 1));
 
         $item['images'] = $imageArray != [] ? $imageArray : null;
 
