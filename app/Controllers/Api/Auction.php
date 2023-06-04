@@ -199,7 +199,7 @@ class Auction extends ResourceController
         }
 
         $imageDb = new ImageModel;
-
+        $bidDb = new BidModel;
         $userDb = new UserModel;
 
         foreach ($auctions as $key1 => $value1) {
@@ -210,6 +210,8 @@ class Auction extends ResourceController
                     $auctions[$key1]['images'][$key2]['image'] = Services::fullImageURL($value2['image']);
                 }
             }
+
+            $auctions[$key1]['bid_count'] = count($bidDb->getBid(where: ['auction_id' => $auctions[$key1]['auction_id']]));
 
             $auctions[$key1]['author'] = $userDb->getUser(id: $value1['user_id'] ?? -69);
 
