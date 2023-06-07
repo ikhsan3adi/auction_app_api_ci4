@@ -92,6 +92,7 @@ class Item extends BaseController
             'item_name'     => 'required',
             'description'   => 'required',
             'initial_price' => 'required|numeric',
+            'images'        => 'mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -109,6 +110,20 @@ class Item extends BaseController
 
         if (!$save) {
             return $this->failServerError(description: 'Failed to create item');
+        }
+
+        if ($imagefile = $this->request->getFiles()) {
+            $imageDb = new ImageModel;
+
+            foreach ($imagefile['images'] as $img) {
+                if ($img->isValid() && !$img->hasMoved()) {
+                    $fileName = date("dmy") . $img->getRandomName();
+
+                    $img->move(ROOTPATH . 'public/images/item', $fileName);
+
+                    $imageDb->save(['item_id' => $db->getInsertID(), 'image' => $fileName]);
+                }
+            }
         }
 
         return $this->respondCreated([
