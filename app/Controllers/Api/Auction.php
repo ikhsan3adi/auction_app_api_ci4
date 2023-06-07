@@ -19,7 +19,8 @@ class Auction extends ResourceController
 
     public function __construct()
     {
-        $this->userId = session()->getFlashdata('user_id');
+        $session = \Config\Services::session();
+        $this->userId = $session->getFlashdata('user_id');
     }
 
     // Basic CRUD operation

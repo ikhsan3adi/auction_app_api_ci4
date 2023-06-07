@@ -17,7 +17,8 @@ class Item extends BaseController
 
     public function __construct()
     {
-        $this->userId = session()->getFlashdata('user_id');
+        $session = \Config\Services::session();
+        $this->userId = $session->getFlashdata('user_id');
     }
 
     public function index()
