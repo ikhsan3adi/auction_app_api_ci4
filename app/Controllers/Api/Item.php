@@ -175,6 +175,62 @@ class Item extends BaseController
         ]);
     }
 
+    public function updateItemImages($id = null)
+    {
+        if (!$this->validate([
+            'former_images_id' => 'permit_empty',
+            'images' => 'permit_empty|mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
+        ])) {
+            return $this->failValidationErrors(\Config\Services::validation()->getErrors());
+        }
+
+        $db = new ItemModel;
+        $exist = $db->where(['item_id' => $id, 'user_id' => $this->userId])->first();
+
+        if (!$exist) {
+            return $this->failNotFound(description: 'Item not found');
+        }
+
+        $removedCount = 0;
+        $addedCount = 0;
+
+        if ($this->request->getRawInputVar('former_images_id')) {
+            $formerImageIds = json_decode($this->request->getRawInputVar('former_images_id'));
+            $imageDb = new ImageModel;
+            $images = $imageDb->where(['item_id' => $id])->findAll();
+
+            foreach ($images as $image) {
+                if ($isDeleted = !in_array($image['image_id'], $formerImageIds)) {
+                    $imageDb->delete($image['image_id']);
+                    $removedCount++;
+                }
+            }
+        }
+
+        if ($imagefile = $this->request->getFiles()) {
+            $imageDb = new ImageModel;
+
+            foreach ($imagefile['images'] as $img) {
+                if ($img->isValid() && !$img->hasMoved()) {
+                    $fileName = date("dmy") . $img->getRandomName();
+                    $img->move(ROOTPATH . 'public/images/item', $fileName);
+
+                    $imageDb->save(['item_id' => $id, 'image' => $fileName]);
+                    $addedCount++;
+                }
+            }
+        }
+
+        return $this->respondUpdated([
+            'status' => 200,
+            'messages' => [
+                'success' => 'Item images updated successfully'
+            ],
+            'removed' => $removedCount,
+            'added' => $addedCount
+        ]);
+    }
+
     public function delete($id = null)
     {
         $db = new ItemModel;

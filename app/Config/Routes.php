@@ -37,6 +37,7 @@ $routes->post('api/login', 'Api\AuthController::login', ['filter' => 'cors']);
 
 $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $routes) {
 
+    $routes->post('item/(:segment)/images/update', 'Api\Item::updateItemImages/$1');
     $routes->resource('item', ['controller' => 'Api\Item']);
 
     $routes->get('auction/(:segment)/bid', 'Api\Bid::showBids/$1');
