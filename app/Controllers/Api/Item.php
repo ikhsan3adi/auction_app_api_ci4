@@ -200,7 +200,7 @@ class Item extends BaseController
             $images = $imageDb->where(['item_id' => $id])->findAll();
 
             foreach ($images as $image) {
-                if ($isDeleted = !in_array($image['image_id'], $formerImageIds)) {
+                if (!in_array($image['image_id'], $formerImageIds)) {
                     $imageDb->delete($image['image_id']);
                     $removedCount++;
                 }
