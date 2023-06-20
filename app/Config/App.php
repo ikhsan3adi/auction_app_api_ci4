@@ -17,7 +17,7 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = 'http://localhost/online_auction_api/';
+    public string $baseURL = 'http://localhost/ci4_online_auction_api/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
