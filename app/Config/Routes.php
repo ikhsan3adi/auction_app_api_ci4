@@ -35,23 +35,25 @@ $routes->get('/', 'Home::index');
 
 $routes->post('api/login', 'Api\AuthController::login', ['filter' => 'cors']);
 
+$routes->post('api/users', 'Api\User::create', ['filter' => 'cors']);
+
 $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $routes) {
 
-    $routes->post('item/(:segment)/images/update', 'Api\Item::updateItemImages/$1');
-    $routes->resource('item', ['controller' => 'Api\Item']);
+    $routes->post('items/(:segment)/images/update', 'Api\Item::updateItemImages/$1');
+    $routes->resource('items', ['controller' => 'Api\Item']);
 
-    $routes->get('auction/(:segment)/bid', 'Api\Bid::showBids/$1');
-    $routes->patch('auction/(:segment)/winner', 'Api\Auction::setWinner/$1');
-    $routes->patch('auction/(:segment)/close', 'Api\Auction::close/$1');
-    $routes->resource('auction', ['controller' => 'Api\Auction']);
+    $routes->get('auctions/(:segment)/bids', 'Api\Bid::showBids/$1');
+    $routes->patch('auctions/(:segment)/winner', 'Api\Auction::setWinner/$1');
+    $routes->patch('auctions/(:segment)/close', 'Api\Auction::close/$1');
+    $routes->resource('auctions', ['controller' => 'Api\Auction']);
 
-    $routes->resource('bid', ['controller' => 'Api\Bid']);
+    $routes->resource('bids', ['controller' => 'Api\Bid']);
 
-    $routes->get('user/bid', 'Api\Auction::myBids');
-    $routes->get('user/auction', 'Api\Auction::myAuctions');
-    $routes->get('user/auction/(:num)', 'Api\Auction::showMyAuction/$1');
+    $routes->get('users/bids', 'Api\Auction::myBids');
+    $routes->get('users/auctions', 'Api\Auction::myAuctions');
+    $routes->get('users/auctions/(:num)', 'Api\Auction::showMyAuction/$1');
 
-    $routes->resource('user', ['controller' => 'Api\User']);
+    $routes->resource('users', ['controller' => 'Api\User']);
 });
 
 /*

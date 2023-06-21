@@ -25,7 +25,7 @@ class AuthController extends BaseController
         }
 
         $db = new UserModel;
-        $user  = $db->where('username', $this->request->getVar('username'))->first();
+        $user = $db->where('username', $this->request->getVar('username'))->first();
 
         if (!$user) {
             return $this->failNotFound('User not found');

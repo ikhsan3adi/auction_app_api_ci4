@@ -12,7 +12,7 @@ class User extends ResourceController
 {
     use ResponseTrait;
 
-    protected String $userId;
+    protected String|null $userId;
 
     public function __construct()
     {
@@ -90,8 +90,11 @@ class User extends ResourceController
         }
 
         return $this->respondCreated([
-            'status' => 200,
-            'messages' => ['success' => 'OK']
+            'status' => 201,
+            'messages' => ['success' => 'OK'],
+            'data' => [
+                'userId' => $db->getInsertID(),
+            ]
         ]);
     }
 
