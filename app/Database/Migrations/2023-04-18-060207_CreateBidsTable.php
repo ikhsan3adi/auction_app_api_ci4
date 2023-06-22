@@ -32,20 +32,9 @@ class CreateBidsTable extends Migration
                 'constraint'     => 11,
                 'unsigned'       => true,
             ],
-            'created_at' => [
-                'type'           => 'DATETIME',
-                'default'        => 'CURRENT_TIMESTAMP',
-                'null'           => true,
-            ],
-            'updated_at' => [
-                'type'           => 'DATETIME',
-                'default'        => 'CURRENT_TIMESTAMP',
-                'null'           => true,
-            ],
-            'deleted_at' => [
-                'type'           => 'DATETIME',
-                'null'           => true,
-            ],
+            'created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL',
+            'updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL',
+            'deleted_at TIMESTAMP NULL',
         ]);
 
         // primary key
