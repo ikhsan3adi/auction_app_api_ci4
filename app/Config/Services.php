@@ -49,13 +49,13 @@ class Services extends BaseService
 
     public static function fullImageURL($imageName): string
     {
-        $baseUrl = 'http://' . $_SERVER['SERVER_NAME'] . '/online_auction_api' . '/public/images/item/';
+        $baseUrl = 'http://' . $_SERVER['SERVER_NAME'] . '/ci4_online_auction_api' . '/public/images/item/';
         return $baseUrl . $imageName;
     }
 
     public static function fullProfileImageURL($imageName): string
     {
-        $baseUrl = 'http://' . $_SERVER['SERVER_NAME'] . '/online_auction_api' . '/public/images/user/';
+        $baseUrl = 'http://' . $_SERVER['SERVER_NAME'] . '/ci4_online_auction_api' . '/public/images/user/';
         return $baseUrl . $imageName;
     }
 }
