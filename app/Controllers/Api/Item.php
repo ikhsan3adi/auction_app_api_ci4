@@ -194,6 +194,7 @@ class Item extends BaseController
         $removedCount = 0;
         $addedCount = 0;
 
+        // Remove former images
         if ($this->request->getRawInputVar('former_images_id')) {
             $formerImageIds = json_decode($this->request->getRawInputVar('former_images_id'));
             $imageDb = new ImageModel;
@@ -201,12 +202,17 @@ class Item extends BaseController
 
             foreach ($images as $image) {
                 if (!in_array($image['image_id'], $formerImageIds)) {
+                    $fileName = $imageDb->where('image_id', $image['image_id'])->first()['image'];
+
                     $imageDb->delete($image['image_id']);
+
+                    unlink(ROOTPATH . 'public/images/item/' . $fileName);
                     $removedCount++;
                 }
             }
         }
 
+        // Save new images
         if ($imagefile = $this->request->getFiles()) {
             $imageDb = new ImageModel;
 
