@@ -232,16 +232,8 @@ class Auction extends ResourceController
         $db = new AuctionModel;
         $auctions = $db->getBidAuctions($this->userId);
 
-        if (!$auctions) {
-            return $this->failNotFound('Bids not found');
-        }
-
         $db = new BidModel;
         $bids = $db->getBid(where: ['user_id' => $this->userId]);
-
-        if (!$bids) {
-            return $this->failNotFound('Bids not found');
-        }
 
         $imageDb = new ImageModel;
         $userDb = new UserModel;
