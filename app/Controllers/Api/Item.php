@@ -135,7 +135,6 @@ class Item extends BaseController
     public function update($id = null)
     {
         if (!$this->validate([
-            'user_id'       => 'permit_empty|numeric',
             'item_name'     => 'permit_empty',
             'description'   => 'permit_empty',
             'initial_price' => 'permit_empty|numeric',
@@ -195,8 +194,8 @@ class Item extends BaseController
         $addedCount = 0;
 
         // Remove former images
-        if ($this->request->getRawInputVar('former_images_id')) {
-            $formerImageIds = json_decode($this->request->getRawInputVar('former_images_id'));
+        if ($this->request->getVar('former_images_id')) {
+            $formerImageIds = json_decode($this->request->getVar('former_images_id'));
             $imageDb = new ImageModel;
             $images = $imageDb->where(['item_id' => $id])->findAll();
 
