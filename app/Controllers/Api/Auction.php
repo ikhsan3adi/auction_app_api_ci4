@@ -97,7 +97,7 @@ class Auction extends ResourceController
     {
         if (!$this->validate([
             'item_id'       => 'required|numeric',
-            // 'user_id'       => 'required|numeric',
+            'date_completed'=> 'permit_empty|valid_date',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -116,6 +116,7 @@ class Auction extends ResourceController
             'item_id'       => $this->request->getVar('item_id'),
             'user_id'       => $this->userId,
             'status'        => 'open',
+            'date_completed'=> $this->request->getVar('date_completed'),
         ];
 
         $db = new AuctionModel;
