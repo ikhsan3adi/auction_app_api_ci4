@@ -69,9 +69,22 @@ class User extends ResourceController
             'password'     => 'required|min_length[6]',
             'name'         => 'required',
             'email'        => 'required|valid_email',
-            'phone'        => 'required'
+            'phone'        => 'required',
+            'profile_image' => 'permit_empty|mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
+        }
+
+        $fileName = null;
+
+        if ($imagefile = $this->request->getFiles()) {
+            foreach ($imagefile['profile_image'] as $img) {
+                if ($img->isValid() && !$img->hasMoved()) {
+                    $fileName = $this->request->getVar('username') . '_' . date("dmy") . $img->getRandomName();
+
+                    $img->move(ROOTPATH . 'public/images/user', $fileName);
+                }
+            }
         }
 
         $insert = [
@@ -80,6 +93,7 @@ class User extends ResourceController
             'name'          => $this->request->getVar('name'),
             'email'         => $this->request->getVar('email'),
             'phone'         => $this->request->getVar('phone'),
+            'profile_image' => $fileName,
         ];
 
         $db = new UserModel;
@@ -93,7 +107,7 @@ class User extends ResourceController
             'status' => 201,
             'messages' => ['success' => 'OK'],
             'data' => [
-                'userId' => $db->getInsertID(),
+                'user_id' => $db->getInsertID(),
             ]
         ]);
     }
