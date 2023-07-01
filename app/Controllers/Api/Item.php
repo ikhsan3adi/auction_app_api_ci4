@@ -90,9 +90,9 @@ class Item extends BaseController
         if (!$this->validate([
             // 'user_id'       => 'required|numeric',
             'item_name'     => 'required',
-            'description'   => 'required',
+            // 'description'   => 'required',
             'initial_price' => 'required|numeric',
-            'images'        => 'mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
+            'images'        => 'permit_empty|mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
