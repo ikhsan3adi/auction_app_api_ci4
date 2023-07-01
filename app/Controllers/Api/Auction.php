@@ -97,7 +97,7 @@ class Auction extends ResourceController
     {
         if (!$this->validate([
             'item_id'       => 'required|numeric',
-            'date_completed'=> 'permit_empty|valid_date',
+            'date_completed' => 'permit_empty|valid_date',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }
@@ -116,7 +116,7 @@ class Auction extends ResourceController
             'item_id'       => $this->request->getVar('item_id'),
             'user_id'       => $this->userId,
             'status'        => 'open',
-            'date_completed'=> $this->request->getVar('date_completed'),
+            'date_completed' => $this->request->getVar('date_completed'),
         ];
 
         $db = new AuctionModel;
@@ -127,8 +127,9 @@ class Auction extends ResourceController
         }
 
         return $this->respondCreated([
-            'status' => 200,
-            'messages' => ['success' => 'OK']
+            'status' => 201,
+            'messages' => ['success' => 'OK'],
+            'data' => ['auction_id' => $db->getInsertID()],
         ]);
     }
 
@@ -172,10 +173,11 @@ class Auction extends ResourceController
     public function delete($id = null)
     {
         $db = new AuctionModel;
-        $exist = $db->getAuction($id);
+        $exist = $db->getAuction($id, allStatus: true);
 
         if (!$exist) return $this->failNotFound(description: 'Auction not found');
 
+        $db = new AuctionModel;
         $delete = $db->delete($id);
 
         if (!$delete) return $this->failServerError(description: 'Failed to delete auction');
