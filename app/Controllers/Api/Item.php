@@ -127,8 +127,9 @@ class Item extends BaseController
         }
 
         return $this->respondCreated([
-            'status' => 200,
-            'messages' => ['success' => 'OK']
+            'status' => 201,
+            'messages' => ['success' => 'OK'],
+            'data' => ['item_id' => $db->getInsertID()],
         ]);
     }
 

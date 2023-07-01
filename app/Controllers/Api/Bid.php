@@ -133,7 +133,7 @@ class Bid extends ResourceController
         }
 
         return $this->respondCreated([
-            'status' => 200,
+            'status' => 201,
             'messages' => ['success' => 'OK']
         ]);
     }
