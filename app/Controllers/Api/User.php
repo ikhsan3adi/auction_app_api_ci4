@@ -70,7 +70,7 @@ class User extends ResourceController
             'name'         => 'required',
             'email'        => 'required|valid_email',
             'phone'        => 'required',
-            'profile_image' => 'permit_empty|mime_in[images,image/png,image/jpeg]|is_image[images]|max_size[images,5120]',
+            'profile_image' => 'permit_empty|mime_in[profile_image,image/png,image/jpeg]|is_image[profile_image]|max_size[profile_image,5120]',
         ])) {
             return $this->failValidationErrors(\Config\Services::validation()->getErrors());
         }

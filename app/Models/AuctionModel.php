@@ -53,12 +53,14 @@ class AuctionModel extends Model
 
         if ($allStatus) {
             $whereArray = [
-                'items.deleted_at' => NULL
+                'items.deleted_at' => NULL,
+                'auctions.deleted_at' => NULL,
             ];
         } else {
             $whereArray = [
                 'status' => $status,
-                'items.deleted_at' => NULL
+                'items.deleted_at' => NULL,
+                'auctions.deleted_at' => NULL,
             ];
         }
 
