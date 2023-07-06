@@ -78,12 +78,12 @@ class User extends ResourceController
         $fileName = null;
 
         if ($imagefile = $this->request->getFiles()) {
-            foreach ($imagefile['profile_image'] as $img) {
-                if ($img->isValid() && !$img->hasMoved()) {
-                    $fileName = $this->request->getVar('username') . '_' . date("dmy") . $img->getRandomName();
+            $img = $imagefile['profile_image'];
 
-                    $img->move(ROOTPATH . 'public/images/user', $fileName);
-                }
+            if ($img->isValid() && !$img->hasMoved()) {
+                $fileName = $this->request->getVar('username') . '_' . date("dmy") . $img->getRandomName();
+
+                $img->move(ROOTPATH . 'public/images/user', $fileName);
             }
         }
 
@@ -115,8 +115,7 @@ class User extends ResourceController
     public function update($id = null)
     {
         if (!$this->validate([
-            'username' => 'permit_empty|is_unique[users.username]',
-            'password' => 'permit_empty|min_length[6]',
+            // 'username' => 'permit_empty|is_unique[users.username]',
             'name'     => 'permit_empty',
             'email'    => 'permit_empty|valid_email',
             'phone'    => 'permit_empty',
@@ -132,23 +131,19 @@ class User extends ResourceController
         }
 
         $update = [
-            'username' => $this->request->getRawInputVar('username')
-                ? $this->request->getRawInputVar('username')
-                : $exist['username'],
-
-            'password_hash' => $this->request->getRawInputVar('password')
-                ? password_hash($this->request->getRawInputVar('password'), PASSWORD_DEFAULT)
-                : $exist['password_hash'],
+            // 'username' => $this->request->getRawInputVar('username')
+            //     ? $this->request->getRawInputVar('username')
+            //     : $exist['username'],
 
             'name' => $this->request->getRawInputVar('name')
                 ?? $exist['name'],
             'email' => $this->request->getRawInputVar('email')
                 ?? $exist['email'],
             'phone' => $this->request->getRawInputVar('phone')
-                ?? $exist['phone']
+                ?? $exist['phone'],
         ];
 
-        $save = $db->update($id, $update);
+        $save = $db->update($this->userId, $update);
 
         if (!$save) {
             return $this->failServerError(description: 'Failed to update user');
@@ -162,6 +157,96 @@ class User extends ResourceController
         ]);
     }
 
+    public function changeProfileImage()
+    {
+        if (!$this->validate([
+            'username' => 'permit_empty',
+            'profile_image' => 'permit_empty|mime_in[profile_image,image/png,image/jpeg]|is_image[profile_image]|max_size[profile_image,5120]',
+        ])) {
+            return $this->failValidationErrors(\Config\Services::validation()->getErrors());
+        }
+
+        $db = new UserModel;
+        $exist = $db->where(['user_id' => $this->userId])->first();
+
+        if (!$exist) {
+            return $this->failNotFound(description: 'User not found');
+        }
+
+        $fileName = null;
+
+        if ($imagefile = $this->request->getFiles()) {
+            $img = $imagefile['profile_image'];
+
+            if ($img->isValid() && !$img->hasMoved()) {
+                if ($exist['profile_image']) {
+                    unlink(ROOTPATH . 'public/images/user/' . $exist['profile_image']);
+                }
+
+                $fileName = $this->request->getVar('username') . '_' . date("dmy") . $img->getRandomName();
+
+                $img->move(ROOTPATH . 'public/images/user', $fileName);
+            }
+        }
+
+        $update = [
+            'profile_image' => $fileName,
+        ];
+
+        $save = $db->update($this->userId, $update);
+
+        if (!$save) {
+            return $this->failServerError(description: 'Failed to update profile image');
+        }
+
+        return $this->respondUpdated([
+            'status' => 200,
+            'messages' => [
+                'success' => 'Profile image updated successfully'
+            ]
+        ]);
+    }
+
+    public function changePassword()
+    {
+        if (!$this->validate([
+            'old_password' => 'required|min_length[6]',
+            'new_password' => 'required|min_length[6]',
+        ])) {
+            return $this->failValidationErrors(\Config\Services::validation()->getErrors());
+        }
+
+        $db = new UserModel;
+        $exist = $db->where(['user_id' => $this->userId])->first();
+
+        if (!$exist) {
+            return $this->failNotFound(description: 'User not found');
+        }
+
+        if (!password_verify($this->request->getVar('old_password'), $exist['password_hash'])) {
+            return $this->fail('Old password does not match');
+        }
+
+        $update = [
+            'password_hash' => $this->request->getVar('password')
+                ? password_hash($this->request->getVar('password'), PASSWORD_DEFAULT)
+                : $exist['password_hash'],
+        ];
+
+        $save = $db->update($this->userId, $update);
+
+        if (!$save) {
+            return $this->failServerError(description: 'Failed to change password');
+        }
+
+        return $this->respondUpdated([
+            'status' => 200,
+            'messages' => [
+                'success' => 'Password updated successfully'
+            ]
+        ]);
+    }
+
     public function delete($id = null)
     {
         $db = new UserModel;
@@ -169,9 +254,11 @@ class User extends ResourceController
 
         if (!$exist) return $this->failNotFound(description: 'User not found');
 
-        $delete = $db->delete($id);
+        $delete = $db->delete($this->userId);
 
         if (!$delete) return $this->failServerError(description: 'Failed to delete user');
+
+        unlink(ROOTPATH . 'public/images/user/' . $exist['profile_image']);
 
         return $this->respond([
             'status' => 200,

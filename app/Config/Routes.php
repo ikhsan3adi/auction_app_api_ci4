@@ -53,6 +53,8 @@ $routes->group('api', ['filter' => 'auth', 'cors'], function (RouteCollection $r
     $routes->get('users/auctions', 'Api\Auction::myAuctions');
     $routes->get('users/auctions/(:num)', 'Api\Auction::showMyAuction/$1');
 
+    $routes->post('users/password', 'Api\User::changePassword');
+    $routes->post('users/images/update', 'Api\User::changeProfileImage');
     $routes->resource('users', ['controller' => 'Api\User']);
 });
 
