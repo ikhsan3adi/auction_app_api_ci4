@@ -248,6 +248,17 @@ class Item extends BaseController
 
         if (!$delete) return $this->failServerError(description: 'Failed to delete item');
 
+        $imageDb = new ImageModel;
+        $images = $imageDb->where(['item_id' => $id])->findAll();
+
+        foreach ($images as $image) {
+            $fileName = $image['image'];
+
+            $imageDb->delete($image['image_id']);
+
+            unlink(ROOTPATH . 'public/images/item/' . $fileName);
+        }
+
         return $this->respondDeleted([
             'status' => 200,
             'messages' => ['success' => 'Item successfully deleted']
