@@ -1,4 +1,4 @@
-# Online Auction Api
+# Flutter Auction App RESTful API Service
 
 [![PHP Composer](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml/badge.svg)](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml)
 
@@ -12,14 +12,13 @@
 
 ## Configuration
 
-In your application, perform the following setup: 
 1.  Rename `env` file to `.env`.
 2.  Set the jwt secretkey and token expiration in the `.env` file if you want to change them.
 3.  Install dependencies:
 ```shell
     composer install
 ```
-5.  Ensure your database is setup correctly, then run the migrations: 
+4.  Ensure your database is setup correctly, then run the migrations: 
 ```shell
     php spark migrate -all  
 ```
