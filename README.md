@@ -52,7 +52,7 @@ POST   /api/users
 | `phone`        | `string` |                |
 
 ---
-Warning:warning: Make sure to add authorization header (Bearer token)
+Warning :warning: Make sure to add authorization header (Bearer token)
 
 #### Get auction
 
