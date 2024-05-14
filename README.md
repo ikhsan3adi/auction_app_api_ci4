@@ -2,7 +2,7 @@
 
 [![Continuous Integration](https://github.com/ikhsan3adi/auction_app_api_ci4/actions/workflows/ci.yml/badge.svg)](https://github.com/ikhsan3adi/auction_app_api_ci4/actions/workflows/ci.yml)
 
- REST API for [Flutter Auction App](https://github.com/ikhsan3adi/flutter-fuction-app) using Codeigniter 4
+ REST API for [Flutter Auction App](https://github.com/ikhsan3adi/flutter-auction-app) using Codeigniter 4
 
 
 ## Requirement
