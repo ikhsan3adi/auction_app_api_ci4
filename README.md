@@ -1,27 +1,34 @@
 # Flutter Auction App RESTful API Service
 
-[![PHP Composer](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml/badge.svg)](https://github.com/ikhsan3adi/ci4_online_auction_api/actions/workflows/php.yml)
+[![Continuous Integration](https://github.com/ikhsan3adi/auction_app_api_ci4/actions/workflows/ci.yml/badge.svg)](https://github.com/ikhsan3adi/auction_app_api_ci4/actions/workflows/ci.yml)
 
- REST API for [Flutter Auction App](https://github.com/ikhsan3adi/Flutter-Auction-App) using Codeigniter 4
+ REST API for [Flutter Auction App](https://github.com/ikhsan3adi/flutter-fuction-app) using Codeigniter 4
 
 
 ## Requirement
 
 - Composer
-- PHP 8.0+, MySQL or XAMPP with `-intl` extension enable
+- **PHP 8.1+ & MySQL** or **XAMPP** with `-intl` extension enable
 
 ## Configuration
 
-1.  Rename `env` file to `.env`.
+1.  Rename `.env.example` file to `.env`.
 2.  Set the jwt secretkey and token expiration in the `.env` file if you want to change them.
 3.  Install dependencies:
 ```shell
     composer install
 ```
-4.  Ensure your database is setup correctly, then run the migrations: 
+4. Create `db_online_auction` database
+5.  Ensure your database is setup correctly, then run the migrations: 
 ```shell
     php spark migrate -all  
 ```
+6.  Run the app: 
+```shell
+    php spark serve  
+```
+
+> http://localhost:8080
 
 ## API Reference
 
