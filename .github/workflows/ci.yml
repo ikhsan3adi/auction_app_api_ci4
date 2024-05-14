@@ -21,7 +21,7 @@ jobs:
           # so we can create and migrate the test database.
           # See: https://hub.docker.com/_/mysql
           MYSQL_DATABASE: db_online_auction_test
-          MYSQL_ROOT_PASSWORD:
+          MYSQL_ROOT_PASSWORD: 123
         ports:
           # Opens port 3306 on service container and host
           # https://docs.github.com/en/actions/using-containerized-services/about-service-containers
@@ -43,6 +43,9 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
+
+      - name: Setup environment
+        run: cp .env.example .env
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
